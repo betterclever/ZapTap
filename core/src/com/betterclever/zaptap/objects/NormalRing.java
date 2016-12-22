@@ -1,13 +1,15 @@
-package com.betterclever.zaptap;
+package com.betterclever.zaptap.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.objects.Ring;
 
 /**
  * Created by betterclever on 22/12/16.
  */
 
-public class NormalRing extends Renderable {
+public class NormalRing extends Ring {
 
     ShapeRenderer renderer;
 
@@ -31,4 +33,5 @@ public class NormalRing extends Renderable {
         renderer.end();
 
     }
+
 }

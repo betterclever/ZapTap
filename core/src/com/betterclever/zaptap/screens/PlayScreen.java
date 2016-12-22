@@ -1,21 +1,23 @@
-package com.betterclever.zaptap;
+package com.betterclever.zaptap.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.objects.CrossMeRing;
+import com.betterclever.zaptap.objects.NormalRing;
+import com.betterclever.zaptap.objects.PlayBall;
+import com.betterclever.zaptap.objects.Ring;
 
 /**
  * Created by betterclever on 22/12/16.
  */
 
-public class PlayScreen implements Screen {
+public class PlayScreen extends InputAdapter implements Screen {
 
     ExtendViewport extendViewport;
     ShapeRenderer shapeRenderer;
@@ -26,7 +28,8 @@ public class PlayScreen implements Screen {
     float timer;
 
     int radius;
-    DelayedRemovalArray<Renderable> rings;
+    DelayedRemovalArray<Ring> rings;
+    PlayBall playBall;
 
     @Override
     public void show() {
@@ -35,10 +38,12 @@ public class PlayScreen implements Screen {
         shapeRenderer.setAutoShapeType(true);
         extendViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
-        rings = new DelayedRemovalArray<Renderable>();
+        Gdx.input.setInputProcessor(this);
+        rings = new DelayedRemovalArray<Ring>();
         time = 0;
         timer = 0;
 
+        playBall = null;
         radius = 200;
     }
 
@@ -60,7 +65,6 @@ public class PlayScreen implements Screen {
         extendViewport.apply();
         shapeRenderer.setProjectionMatrix(extendViewport.getCamera().combined);
 
-
         if(timer >= 0.5){
             timer-=0.5;
 
@@ -70,7 +74,11 @@ public class PlayScreen implements Screen {
                 rings.add(new CrossMeRing(shapeRenderer, 5));
             }
             else {
-                rings.add(new NormalRing(shapeRenderer));
+                NormalRing q = new NormalRing(shapeRenderer);
+                rings.add(q);
+                if(playBall == null){
+                    playBall = new PlayBall(shapeRenderer,q);
+                }
             }
         }
 
@@ -85,6 +93,19 @@ public class PlayScreen implements Screen {
         for (int i = rings.size-1 ; i >= 0 ; i--) {
             rings.get(i).render(delta);
         }
+
+        if(playBall!=null){
+            playBall.render(delta);
+        }
+
+        if(playBall.isDetached()){
+            for (int i = 0; i < rings.size; i++) {
+
+
+
+            }
+        }
+
         /*
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -106,7 +127,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Gdx.app.log("width", String.valueOf(width));
+        //Gdx.app.log("width", String.valueOf(width));
         extendViewport.update(width,height,true);
     }
 
@@ -128,5 +149,15 @@ public class PlayScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        super.touchDown(screenX, screenY, pointer, button);
+
+        playBall.detach();
+        Gdx.app.log("Hi","touchDown");
+
+        return true;
     }
 }
