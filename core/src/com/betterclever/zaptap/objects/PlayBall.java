@@ -16,12 +16,12 @@ public class PlayBall {
     int radius;
     ShapeRenderer renderer;
     NormalRing attachedRing;
-    Circle bound;
+    public Circle bound;
     int rotateRadius = 0;
     float angle;
     int time;
 
-    public PlayBall(ShapeRenderer renderer, NormalRing attachedRing){
+    public PlayBall(ShapeRenderer renderer, NormalRing attachedRing) {
         radius = 15;
         this.renderer = renderer;
         this.attachedRing = attachedRing;
@@ -29,50 +29,59 @@ public class PlayBall {
         angle = 0;
     }
 
-    public void render(float delta){
+    public void render(float delta) {
 
-        if(attachedRing == null){
+        if (attachedRing == null) {
             renderNotAttached(delta);
             return;
         }
 
-        angle += delta/2;
+        angle += delta / 2;
         rotateRadius = attachedRing.getRadius();
 
-        //Gdx.app.log("arr", String.valueOf(rotateRadius));
+       // Gdx.app.log("arr", String.valueOf(rotateRadius));
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
         renderer.setColor(Color.CYAN);
-        renderer.circle(Constants.WORLD_WIDTH/2 + rotateRadius * MathUtils.sin(angle)-2.5f, Constants.WORLD_HEIGHT/2 + rotateRadius * MathUtils.cos(angle)-2.5f,radius,256);
+        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius, 256);
 
-        bound.set(Constants.WORLD_WIDTH/2 + rotateRadius * MathUtils.sin(angle)-2.5f,Constants.WORLD_HEIGHT/2 + rotateRadius * MathUtils.cos(angle)-2.5f, radius);
+        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius);
 
         renderer.end();
 
     }
 
-    private void renderNotAttached(float delta){
+    private void renderNotAttached(float delta) {
 
-        Gdx.app.log("rr", String.valueOf(rotateRadius));
+        //Gdx.app.log("rr", String.valueOf(rotateRadius));
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(Color.CORAL);
-        renderer.circle(Constants.WORLD_WIDTH/2 + rotateRadius * MathUtils.sin(angle)-2.5f, Constants.WORLD_HEIGHT/2 + rotateRadius * MathUtils.cos(angle)-2.5f,radius,256);
+        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius, 256);
 
-        bound.set(Constants.WORLD_WIDTH/2 + rotateRadius * MathUtils.sin(angle)-2.5f,Constants.WORLD_HEIGHT/2 + rotateRadius * MathUtils.cos(angle)-2.5f, radius);
+        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius);
 
-        rotateRadius += 100*delta;
+        rotateRadius += 300 * delta;
         renderer.end();
 
     }
 
-    public void detach(){
+    public Ring detach() {
+        Ring r = attachedRing;
         attachedRing = null;
+        return r;
     }
 
-    public boolean isDetached(){
+    public boolean isDetached() {
         return attachedRing == null;
     }
 
+    public int getRotateRadius() {
+        return rotateRadius;
+    }
+
+    public void setAttachedRing(NormalRing attachedRing) {
+        this.attachedRing = attachedRing;
+    }
 }

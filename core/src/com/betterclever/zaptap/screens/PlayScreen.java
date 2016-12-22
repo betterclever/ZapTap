@@ -31,6 +31,8 @@ public class PlayScreen extends InputAdapter implements Screen {
     DelayedRemovalArray<Ring> rings;
     PlayBall playBall;
 
+    Ring lastAttachedRing;
+
     @Override
     public void show() {
 
@@ -84,7 +86,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         rings.begin();
         for (int i = 0; i < rings.size; i++) {
-            if(rings.get(i).radius < 10){
+            if(rings.get(i).radius < 20){
                 rings.removeIndex(i);
             }
         }
@@ -96,15 +98,39 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         if(playBall!=null){
             playBall.render(delta);
-        }
 
-        if(playBall.isDetached()){
-            for (int i = 0; i < rings.size; i++) {
+            if(playBall.isDetached()){
+
+                for (int i = rings.size -1 ; i >= 0; i--) {
+
+                    Ring ring = rings.get(i);
+
+                    if(ring.equals(lastAttachedRing)){
+                        continue;
+                    }
+
+                    int r = ring.radius;
+
+                    Gdx.app.log("radius", String.valueOf(r));
+                    float diff = r - playBall.getRotateRadius();
+
+                    Gdx.app.log("diff", String.valueOf(diff));
+                    if(diff<7.5f && diff > 0){
+                        if(ring.getClass().equals(NormalRing.class)){
+                            playBall.setAttachedRing((NormalRing) ring);
+                            break;
+                        }
+                        else {
+
+                        }
+                    }
 
 
-
+                }
             }
         }
+
+
 
         /*
 
@@ -155,9 +181,10 @@ public class PlayScreen extends InputAdapter implements Screen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         super.touchDown(screenX, screenY, pointer, button);
 
-        playBall.detach();
-        Gdx.app.log("Hi","touchDown");
-
+        if(playBall!=null) {
+            lastAttachedRing = playBall.detach();
+            Gdx.app.log("Hi", "touchDown");
+        }
         return true;
     }
 }
