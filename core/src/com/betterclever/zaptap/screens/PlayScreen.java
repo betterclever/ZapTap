@@ -73,7 +73,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             // dirty hack
             sw = -sw;
             if(sw == 1) {
-                rings.add(new CrossMeRing(shapeRenderer, 5));
+                rings.add(new CrossMeRing(shapeRenderer, 2));
             }
             else {
                 NormalRing q = new NormalRing(shapeRenderer);
@@ -111,16 +111,42 @@ public class PlayScreen extends InputAdapter implements Screen {
 
                     int r = ring.radius;
 
-                    Gdx.app.log("radius", String.valueOf(r));
+                    //Gdx.app.log("radius", String.valueOf(r));
                     float diff = r - playBall.getRotateRadius();
 
-                    Gdx.app.log("diff", String.valueOf(diff));
+                    //Gdx.app.log("diff", String.valueOf(diff));
                     if(diff<7.5f && diff > 0){
                         if(ring.getClass().equals(NormalRing.class)){
                             playBall.setAttachedRing((NormalRing) ring);
                             break;
                         }
                         else {
+
+                            CrossMeRing cmr = (CrossMeRing) ring;
+                            float ballAngle = playBall.getAngle();
+
+                            int arcCount = cmr.getArcNum();
+                            float rot = cmr.getRot();
+
+                            for (int j = 0; j < arcCount; j++) {
+
+                                float q1 = 360/arcCount * j + rot + 360;
+                                float q2 = q1 + 180/arcCount ;
+
+                                float ballAngle1 = ballAngle + 360;
+
+                                //Gdx.app.log("q1 : q2 : ballAngle",""+q1+" "+q2+" "+ballAngle1);
+
+                                if(ballAngle1 > q1 && ballAngle1 < q2){
+
+                                    Gdx.app.log(" Collision","detected");
+
+                                    
+
+                                }
+
+
+                            }
 
                         }
                     }

@@ -36,7 +36,8 @@ public class PlayBall {
             return;
         }
 
-        angle += delta / 2;
+        angle += 100*delta;
+        angle %= 360;
         rotateRadius = attachedRing.getRadius();
 
        // Gdx.app.log("arr", String.valueOf(rotateRadius));
@@ -44,9 +45,9 @@ public class PlayBall {
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
         renderer.setColor(Color.CYAN);
-        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius, 256);
+        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f, radius, 256);
 
-        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius);
+        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f, radius);
 
         renderer.end();
 
@@ -58,9 +59,9 @@ public class PlayBall {
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(Color.CORAL);
-        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius, 256);
+        renderer.circle(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f, radius, 256);
 
-        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sin(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cos(angle) - 2.5f, radius);
+        bound.set(Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f, Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f, radius);
 
         rotateRadius += 300 * delta;
         renderer.end();
@@ -83,5 +84,9 @@ public class PlayBall {
 
     public void setAttachedRing(NormalRing attachedRing) {
         this.attachedRing = attachedRing;
+    }
+
+    public float getAngle() {
+        return angle;
     }
 }
