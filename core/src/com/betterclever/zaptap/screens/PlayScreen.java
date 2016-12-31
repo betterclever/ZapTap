@@ -5,10 +5,13 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.objects.CrossMeRing;
+import com.betterclever.zaptap.objects.ExplosionTriangle;
 import com.betterclever.zaptap.objects.NormalRing;
 import com.betterclever.zaptap.objects.PlayBall;
 import com.betterclever.zaptap.objects.Ring;
@@ -28,7 +31,10 @@ public class PlayScreen extends InputAdapter implements Screen {
     float timer;
 
     int radius;
+
     DelayedRemovalArray<Ring> rings;
+    Array<ExplosionTriangle> explosionTriangles;
+
     PlayBall playBall;
 
     Ring lastAttachedRing;
@@ -42,6 +48,8 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         Gdx.input.setInputProcessor(this);
         rings = new DelayedRemovalArray<Ring>();
+        explosionTriangles = new Array<ExplosionTriangle>();
+
         time = 0;
         timer = 0;
 
@@ -73,7 +81,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             // dirty hack
             sw = -sw;
             if(sw == 1) {
-                rings.add(new CrossMeRing(shapeRenderer, 2));
+                rings.add(new CrossMeRing(shapeRenderer, MathUtils.random(2,6)));
             }
             else {
                 NormalRing q = new NormalRing(shapeRenderer);
@@ -94,6 +102,10 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         for (int i = rings.size-1 ; i >= 0 ; i--) {
             rings.get(i).render(delta);
+        }
+
+        for (ExplosionTriangle tri: explosionTriangles) {
+            tri.render(delta);
         }
 
         if(playBall!=null){
@@ -123,26 +135,47 @@ public class PlayScreen extends InputAdapter implements Screen {
                         else {
 
                             CrossMeRing cmr = (CrossMeRing) ring;
-                            float ballAngle = playBall.getAngle();
+                            float ballAngle = playBall.getAngle() ;
 
                             int arcCount = cmr.getArcNum();
                             float rot = cmr.getRot();
 
+                            //Gdx.app.log("arccount", String.valueOf(arcCount));
+
                             for (int j = 0; j < arcCount; j++) {
 
-                                float q1 = 360/arcCount * j + rot + 360;
-                                float q2 = q1 + 180/arcCount ;
+                                //Gdx.app.log("check angle", String.valueOf(360/arcCount * j - rot));
+                                float q1 = 360/arcCount * j + rot;
+                                float q2 = q1 + 180/arcCount  ;
 
-                                float ballAngle1 = ballAngle + 360;
+                                float ballAngle1 = ballAngle;
 
                                 //Gdx.app.log("q1 : q2 : ballAngle",""+q1+" "+q2+" "+ballAngle1);
 
-                                if(ballAngle1 > q1 && ballAngle1 < q2){
 
-                                    Gdx.app.log(" Collision","detected");
+                                if(ballAngle1 >= (q1-5) && ballAngle1 <= (q2+5) ){
 
-                                    
+                                    //Gdx.app.log(" Collision","detected");
 
+                                    int n = MathUtils.random(10,20);
+                                    for(int k=0;k< n;k++){
+
+                                        ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
+                                        explosionTriangles.add(explosionTriangle);
+
+                                    }
+                                }
+
+                                else if(ballAngle1+360 >= (q1-5) && ballAngle1+360 <= (q2+5)) {
+                                   // Gdx.app.log(" Collision","detected");
+
+                                    int n = MathUtils.random(10,20);
+                                    for(int k=0;k< n;k++){
+
+                                        ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
+                                        explosionTriangles.add(explosionTriangle);
+
+                                    }
                                 }
 
 
