@@ -106,6 +106,7 @@ public class PlayBall {
     }
 
     public Ring detach() {
+        Gdx.app.log("ball","detached");
         Ring r = attachedRing;
         attachedRing = null;
         return r;
@@ -120,6 +121,7 @@ public class PlayBall {
     }
 
     public void setAttachedRing(NormalRing attachedRing) {
+        Gdx.app.log("ball","attached");
         this.attachedRing = attachedRing;
     }
 

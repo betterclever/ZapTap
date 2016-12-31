@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -16,6 +17,7 @@ import com.betterclever.zaptap.objects.ExplosionTriangle;
 import com.betterclever.zaptap.objects.NormalRing;
 import com.betterclever.zaptap.objects.PlayBall;
 import com.betterclever.zaptap.objects.Ring;
+import com.betterclever.zaptap.objects.Score;
 
 /**
  * Created by betterclever on 22/12/16.
@@ -25,6 +27,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     ExtendViewport extendViewport;
     ShapeRenderer shapeRenderer;
+    SpriteBatch spriteBatch;
 
     int sw = 1;
     float time;
@@ -40,6 +43,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     Ring lastAttachedRing;
     ZapTapGame game;
+    Score score;
 
     boolean stopped = false;
 
@@ -51,6 +55,7 @@ public class PlayScreen extends InputAdapter implements Screen {
     public void show() {
 
         shapeRenderer = new ShapeRenderer();
+        spriteBatch= new SpriteBatch();
         shapeRenderer.setAutoShapeType(true);
         extendViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
@@ -61,6 +66,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         time = 0;
         timer = 0;
 
+        score = new Score(spriteBatch);
         playBall = null;
         radius = 200;
     }
@@ -82,7 +88,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         extendViewport.apply();
         shapeRenderer.setProjectionMatrix(extendViewport.getCamera().combined);
-
+        spriteBatch.setProjectionMatrix(extendViewport.getCamera().combined);
 
         if(!stopped) {
             if (timer >= 0.5) {
@@ -126,96 +132,117 @@ public class PlayScreen extends InputAdapter implements Screen {
         }
         explosionTriangles.end();
 
+        if(!stopped) {
+            handleBall(delta);
+        }
+        score.render(delta);
 
-        handleBall(delta);
+        if (playBall!=null) {
+            if (playBall.getRotateRadius() > 400) {
+                stopped = true;
+                for (Ring r : rings) {
+                    r.stop();
+                }
+                playBall = null;
+            }
+        }
 
     }
 
     private void handleBall(float delta) {
 
-        if(playBall!=null){
-            playBall.render(delta);
+        if(playBall == null){
+            Gdx.app.log("ball","null");
+            return;
+        }
 
-            if(playBall.isDetached()){
+        playBall.render(delta);
 
-                for (int i = rings.size -1 ; i >= 0; i--) {
+        if(playBall.isDetached()){
 
-                    Ring ring = rings.get(i);
+            for (int i = rings.size -1 ; i >= 0; i--) {
 
-                    if(ring.equals(lastAttachedRing)){
-                        continue;
+                Ring ring = rings.get(i);
+
+                if(ring.equals(lastAttachedRing)){
+                    continue;
+                }
+
+                int r = ring.radius;
+
+                //Gdx.app.log("radius", String.valueOf(r));
+                if(playBall == null){
+                    Gdx.app.log("WTF","playball null");
+                    return;
+                }
+                float diff = r - playBall.getRotateRadius();
+
+                //Gdx.app.log("diff", String.valueOf(diff));
+                if(diff<7.5f && diff > 0){
+                    if(ring.getClass().equals(NormalRing.class)){
+                        playBall.setAttachedRing((NormalRing) ring);
+                        score.increase();
+                        break;
                     }
+                    else {
 
-                    int r = ring.radius;
+                        CrossMeRing cmr = (CrossMeRing) ring;
+                        float ballAngle = playBall.getAngle() ;
 
-                    //Gdx.app.log("radius", String.valueOf(r));
-                    float diff = r - playBall.getRotateRadius();
+                        int arcCount = cmr.getArcNum();
+                        float rot = cmr.getRot();
 
-                    //Gdx.app.log("diff", String.valueOf(diff));
-                    if(diff<7.5f && diff > 0){
-                        if(ring.getClass().equals(NormalRing.class)){
-                            playBall.setAttachedRing((NormalRing) ring);
-                            break;
-                        }
-                        else {
+                        //Gdx.app.log("arccount", String.valueOf(arcCount));
 
-                            CrossMeRing cmr = (CrossMeRing) ring;
-                            float ballAngle = playBall.getAngle() ;
+                        for (int j = 0; j < arcCount; j++) {
 
-                            int arcCount = cmr.getArcNum();
-                            float rot = cmr.getRot();
+                            //Gdx.app.log("check angle", String.valueOf(360/arcCount * j - rot));
+                            float q1 = 360/arcCount * j + rot;
+                            float q2 = q1 + 180/arcCount  ;
 
-                            //Gdx.app.log("arccount", String.valueOf(arcCount));
+                            float ballAngle1 = ballAngle;
 
-                            for (int j = 0; j < arcCount; j++) {
-
-                                //Gdx.app.log("check angle", String.valueOf(360/arcCount * j - rot));
-                                float q1 = 360/arcCount * j + rot;
-                                float q2 = q1 + 180/arcCount  ;
-
-                                float ballAngle1 = ballAngle;
-
-                                //Gdx.app.log("q1 : q2 : ballAngle",""+q1+" "+q2+" "+ballAngle1);
+                            //Gdx.app.log("q1 : q2 : ballAngle",""+q1+" "+q2+" "+ballAngle1);
 
 
-                                if(ballAngle1 >= (q1-5) && ballAngle1 <= (q2+5) ){
+                            if(ballAngle1 >= (q1-5) && ballAngle1 <= (q2+5) ){
 
-                                    //Gdx.app.log(" Collision","detected");
+                                //Gdx.app.log(" Collision","detected");
 
-                                    int n = MathUtils.random(10,20);
-                                    for(int k=0;k< n;k++){
+                                int n = MathUtils.random(10,20);
+                                for(int k=0;k< n;k++){
 
-                                        ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
-                                        explosionTriangles.add(explosionTriangle);
+                                    ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
+                                    explosionTriangles.add(explosionTriangle);
 
-
-                                        for(Ring mRing: rings){
-                                            mRing.stop();
-                                        }
-                                        stopped = true;
-                                        Gdx.input.vibrate(500);
-
-                                    }
                                 }
 
-                                else if(ballAngle1+360 >= (q1-5) && ballAngle1+360 <= (q2+5)) {
-                                    // Gdx.app.log(" Collision","detected");
-
-                                    int n = MathUtils.random(10,20);
-                                    for(int k=0;k< n;k++){
-
-                                        ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
-                                        explosionTriangles.add(explosionTriangle);
-
-                                    }
-
-                                    for(Ring mRing: rings){
-                                        mRing.stop();
-                                    }
-
-                                    stopped = true;
-                                    Gdx.input.vibrate(500);
+                                for(Ring mRing: rings){
+                                    mRing.stop();
                                 }
+                                stopped = true;
+                                playBall = null;
+                                Gdx.input.vibrate(500);
+                            }
+
+                            else if(ballAngle1+360 >= (q1-5) && ballAngle1+360 <= (q2+5)) {
+                                // Gdx.app.log(" Collision","detected");
+
+                                int n = MathUtils.random(10,20);
+                                for(int k=0;k< n;k++){
+
+                                    ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
+                                    explosionTriangles.add(explosionTriangle);
+
+                                }
+
+                                for(Ring mRing: rings){
+                                    mRing.stop();
+                                }
+
+                                stopped = true;
+                                playBall = null;
+                                Gdx.input.vibrate(500);
                             }
                         }
                     }
