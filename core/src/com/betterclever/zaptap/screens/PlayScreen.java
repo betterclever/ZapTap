@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.CrossMeRing;
 import com.betterclever.zaptap.objects.ExplosionTriangle;
 import com.betterclever.zaptap.objects.NormalRing;
@@ -33,11 +34,18 @@ public class PlayScreen extends InputAdapter implements Screen {
     int radius;
 
     DelayedRemovalArray<Ring> rings;
-    Array<ExplosionTriangle> explosionTriangles;
+    DelayedRemovalArray<ExplosionTriangle> explosionTriangles;
 
     PlayBall playBall;
 
     Ring lastAttachedRing;
+    ZapTapGame game;
+
+    boolean stopped = false;
+
+    public PlayScreen(ZapTapGame zapTapGame) {
+        game = zapTapGame;
+    }
 
     @Override
     public void show() {
@@ -48,7 +56,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         Gdx.input.setInputProcessor(this);
         rings = new DelayedRemovalArray<Ring>();
-        explosionTriangles = new Array<ExplosionTriangle>();
+        explosionTriangles = new DelayedRemovalArray<ExplosionTriangle>();
 
         time = 0;
         timer = 0;
@@ -75,19 +83,21 @@ public class PlayScreen extends InputAdapter implements Screen {
         extendViewport.apply();
         shapeRenderer.setProjectionMatrix(extendViewport.getCamera().combined);
 
-        if(timer >= 0.5){
-            timer-=0.5;
 
-            // dirty hack
-            sw = -sw;
-            if(sw == 1) {
-                rings.add(new CrossMeRing(shapeRenderer, MathUtils.random(2,6)));
-            }
-            else {
-                NormalRing q = new NormalRing(shapeRenderer);
-                rings.add(q);
-                if(playBall == null){
-                    playBall = new PlayBall(shapeRenderer,q);
+        if(!stopped) {
+            if (timer >= 0.5) {
+                timer -= 0.5;
+
+                // dirty hack
+                sw = -sw;
+                if (sw == 1) {
+                    rings.add(new CrossMeRing(shapeRenderer, MathUtils.random(2, 6)));
+                } else {
+                    NormalRing q = new NormalRing(shapeRenderer);
+                    rings.add(q);
+                    if (playBall == null) {
+                        playBall = new PlayBall(shapeRenderer, q);
+                    }
                 }
             }
         }
@@ -107,6 +117,21 @@ public class PlayScreen extends InputAdapter implements Screen {
         for (ExplosionTriangle tri: explosionTriangles) {
             tri.render(delta);
         }
+
+        explosionTriangles.begin();
+        for (int i = 0; i < explosionTriangles.size ; i++) {
+            if(explosionTriangles.get(i).getTime() > 8f){
+                explosionTriangles.removeIndex(i);
+            }
+        }
+        explosionTriangles.end();
+
+
+        handleBall(delta);
+
+    }
+
+    private void handleBall(float delta) {
 
         if(playBall!=null){
             playBall.render(delta);
@@ -163,11 +188,18 @@ public class PlayScreen extends InputAdapter implements Screen {
                                         ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
                                         explosionTriangles.add(explosionTriangle);
 
+
+                                        for(Ring mRing: rings){
+                                            mRing.stop();
+                                        }
+                                        stopped = true;
+                                        Gdx.input.vibrate(500);
+
                                     }
                                 }
 
                                 else if(ballAngle1+360 >= (q1-5) && ballAngle1+360 <= (q2+5)) {
-                                   // Gdx.app.log(" Collision","detected");
+                                    // Gdx.app.log(" Collision","detected");
 
                                     int n = MathUtils.random(10,20);
                                     for(int k=0;k< n;k++){
@@ -176,38 +208,20 @@ public class PlayScreen extends InputAdapter implements Screen {
                                         explosionTriangles.add(explosionTriangle);
 
                                     }
+
+                                    for(Ring mRing: rings){
+                                        mRing.stop();
+                                    }
+
+                                    stopped = true;
+                                    Gdx.input.vibrate(500);
                                 }
-
-
                             }
-
                         }
                     }
-
-
                 }
             }
         }
-
-
-
-        /*
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.CHARTREUSE);
-        shapeRenderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius,256);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.circle(Constants.WORLD_WIDTH/2, Constants.WORLD_HEIGHT/2, radius-5,256);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(Constants.WORLD_WIDTH/2+(radius-2.5f)*MathUtils.sin(time),Constants.WORLD_HEIGHT/2+(radius-2.5f)*MathUtils.cos(time),20,256);
-        shapeRenderer.end();*/
-
     }
 
     @Override

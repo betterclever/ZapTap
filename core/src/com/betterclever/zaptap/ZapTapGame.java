@@ -8,7 +8,7 @@ public class ZapTapGame extends Game {
 
 	@Override
 	public void create() {
-		setScreen(new PlayScreen());
+		setScreen(new PlayScreen(this));
 	}
 
 }

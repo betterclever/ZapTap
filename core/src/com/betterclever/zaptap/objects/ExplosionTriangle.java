@@ -20,6 +20,7 @@ public class ExplosionTriangle {
     float size;
     float f = 0.0f;
     Color color;
+    float time;
 
     public ExplosionTriangle(ShapeRenderer renderer, Vector2 position, float angle){
         this.renderer = renderer;
@@ -31,6 +32,8 @@ public class ExplosionTriangle {
     }
 
     public void render(float delta){
+
+        time += delta;
 
         position.x += 8 * MathUtils.sinDeg(angle);
         position.y += 8 * MathUtils.cosDeg(angle);
@@ -46,4 +49,7 @@ public class ExplosionTriangle {
         renderer.end();
     }
 
+    public float getTime() {
+        return time;
+    }
 }

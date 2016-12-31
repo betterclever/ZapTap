@@ -25,10 +25,11 @@ public class CrossMeRing extends Ring {
 
     public void render(float delta){
 
-        radius -= delta;
-        rot += (40*delta);
-
-        rot %= 360;
+        if(!stopped) {
+            radius -= delta;
+            rot += (40 * delta);
+            rot %= 360;
+        }
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 

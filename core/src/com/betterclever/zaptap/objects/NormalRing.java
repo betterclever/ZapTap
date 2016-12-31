@@ -24,7 +24,9 @@ public class NormalRing extends Ring {
     @Override
     public void render(float delta) {
 
-        radius -= delta;
+        if(!stopped) {
+            radius -= delta;
+        }
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -36,5 +38,6 @@ public class NormalRing extends Ring {
         renderer.end();
 
     }
+
 
 }
