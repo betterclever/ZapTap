@@ -5,10 +5,18 @@ import com.betterclever.zaptap.screens.PlayScreen;
 
 public class ZapTapGame extends Game {
 
+	PlayScreen playScreen;
 
 	@Override
 	public void create() {
-		setScreen(new PlayScreen(this));
+		playScreen = new PlayScreen(this);
+		setScreen(playScreen);
+	}
+
+	public void resetPlay(){
+		playScreen.dispose();
+		playScreen = new PlayScreen(this);
+		setScreen(playScreen);
 	}
 
 }

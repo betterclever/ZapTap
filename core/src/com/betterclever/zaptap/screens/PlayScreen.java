@@ -3,10 +3,15 @@ package com.betterclever.zaptap.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -46,6 +51,12 @@ public class PlayScreen extends InputAdapter implements Screen {
     Score score;
 
     boolean stopped = false;
+    Color bannerColor;
+
+    BitmapFont font;
+    BitmapFont restartButtonFont;
+
+    Rectangle bounds;
 
     public PlayScreen(ZapTapGame zapTapGame) {
         game = zapTapGame;
@@ -63,12 +74,26 @@ public class PlayScreen extends InputAdapter implements Screen {
         rings = new DelayedRemovalArray<Ring>();
         explosionTriangles = new DelayedRemovalArray<ExplosionTriangle>();
 
+        bounds = new Rectangle();
         time = 0;
         timer = 0;
 
+        bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
         playBall = null;
         radius = 200;
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 100;
+        parameter.color= Color.WHITE;
+        font = generator.generateFont(parameter);
+        parameter.size = 50;
+        parameter.color = Color.BLACK;
+        restartButtonFont = generator.generateFont(parameter);
+        generator.dispose();
+
+
     }
 
     @Override
@@ -135,6 +160,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         if(!stopped) {
             handleBall(delta);
         }
+
         score.render(delta);
 
         if (playBall!=null) {
@@ -146,6 +172,43 @@ public class PlayScreen extends InputAdapter implements Screen {
                 playBall = null;
             }
         }
+
+        if(stopped){
+            drawBanner();
+            writeGameOver();
+            drawRestartButton();
+        }
+
+    }
+
+    private void drawRestartButton() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
+        shapeRenderer.end();
+
+        bounds.set(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
+
+        spriteBatch.begin();
+        restartButtonFont.draw(spriteBatch,"RESTART",Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20);
+        spriteBatch.end();
+    }
+
+    private void writeGameOver() {
+        spriteBatch.begin();
+        font.draw(spriteBatch,"Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50);
+        spriteBatch.end();
+    }
+
+    private void drawBanner() {
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(bannerColor);
+        shapeRenderer.rect(0,Constants.WORLD_HEIGHT/4,Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT/2.3f);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
 
     }
 
@@ -285,6 +348,15 @@ public class PlayScreen extends InputAdapter implements Screen {
             lastAttachedRing = playBall.detach();
             Gdx.app.log("Hi", "touchDown");
         }
+
+        if(stopped){
+            Vector2 point = new Vector2(screenX,screenY);
+            point =  extendViewport.unproject(point);
+            if(bounds.contains(point)){
+                game.resetPlay();
+            }
+        }
+
         return true;
     }
 }
