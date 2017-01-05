@@ -339,7 +339,10 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-
+        spriteBatch.dispose();
+        font.dispose();
+        restartButtonFont.dispose();
+        shapeRenderer.dispose();
     }
 
     @Override

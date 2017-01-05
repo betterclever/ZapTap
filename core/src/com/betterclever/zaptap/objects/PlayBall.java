@@ -15,17 +15,17 @@ import com.betterclever.zaptap.Constants;
 
 public class PlayBall {
 
-    int radius;
-    ShapeRenderer renderer;
-    NormalRing attachedRing;
-    public Circle bound;
-    int rotateRadius = 0;
-    float angle;
-    float time;
-    Vector2 position;
-    Color color;
-    Color destColor;
-    ColorAction colorAction;
+    private int radius;
+    private ShapeRenderer renderer;
+    private NormalRing attachedRing;
+    private Circle bound;
+    private int rotateRadius = 0;
+    private float angle;
+    private float time;
+    private Vector2 position;
+    private Color color;
+    private Color destColor;
+    private ColorAction colorAction;
 
     public PlayBall(ShapeRenderer renderer, NormalRing attachedRing) {
         radius = 15;
@@ -35,7 +35,7 @@ public class PlayBall {
         angle = 0;
         position = new Vector2();
         color = Color.TEAL;
-        destColor = Color.RED;
+        destColor = Color.YELLOW;
         colorAction = new ColorAction();
         colorAction.setColor(color);
         colorAction.setDuration(2f);
