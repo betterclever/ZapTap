@@ -21,6 +21,7 @@ public class ExplosionTriangle {
     float f = 0.0f;
     Color color;
     float time;
+    float speedFactor;
 
     public ExplosionTriangle(ShapeRenderer renderer, Vector2 position, float angle){
         this.renderer = renderer;
@@ -29,14 +30,15 @@ public class ExplosionTriangle {
         size = MathUtils.random();
         f = MathUtils.random(0.5f,1.2f);
         color = new Color(MathUtils.random(),MathUtils.random(),MathUtils.random(),1);
+        speedFactor = MathUtils.random(1f,2f);
     }
 
     public void render(float delta){
 
         time += delta;
 
-        position.x += 8 * MathUtils.sinDeg(angle);
-        position.y += 8 * MathUtils.cosDeg(angle);
+        position.x += speedFactor * 8 * MathUtils.sinDeg(angle);
+        position.y += speedFactor * 8 * MathUtils.cosDeg(angle);
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(color);

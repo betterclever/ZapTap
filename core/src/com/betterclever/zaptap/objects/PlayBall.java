@@ -69,8 +69,8 @@ public class PlayBall {
         }
         rotateRadius = attachedRing.getRadius();
 
-        position.x = Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f;
-        position.y = Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f;
+        position.x = Constants.WORLD_WIDTH / 2 + (rotateRadius - 2.5f) * MathUtils.cosDeg(angle);
+        position.y = Constants.WORLD_HEIGHT / 2 + (rotateRadius - 2.5f) * MathUtils.sinDeg(angle);
 
        // Gdx.app.log("arr", String.valueOf(rotateRadius));
 
@@ -81,7 +81,6 @@ public class PlayBall {
 
         bound.set(position.x, position.y, radius);
 
-
         //Gdx.app.log("angle of ball", String.valueOf(angle));
         renderer.end();
 
@@ -91,8 +90,8 @@ public class PlayBall {
 
         //Gdx.app.log("rr", String.valueOf(rotateRadius));
 
-        position.x = Constants.WORLD_WIDTH / 2 + rotateRadius * MathUtils.cosDeg(angle) - 2.5f;
-        position.y = Constants.WORLD_HEIGHT / 2 + rotateRadius * MathUtils.sinDeg(angle) - 2.5f;
+        position.x = Constants.WORLD_WIDTH / 2 + (rotateRadius - 2.5f) * MathUtils.cosDeg(angle);
+        position.y = Constants.WORLD_HEIGHT / 2 + (rotateRadius - 2.5f) * MathUtils.sinDeg(angle);
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(Color.CORAL);

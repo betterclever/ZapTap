@@ -1,6 +1,7 @@
 package com.betterclever.zaptap.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -164,12 +165,23 @@ public class PlayScreen extends InputAdapter implements Screen {
         score.render(delta);
 
         if (playBall!=null) {
-            if (playBall.getRotateRadius() > 400) {
+            if (playBall.getRotateRadius() > 300) {
                 stopped = true;
                 for (Ring r : rings) {
                     r.stop();
                 }
+                createExplosion();
                 playBall = null;
+            }
+
+            else if (playBall.getRotateRadius() < 30) {
+                stopped = true;
+                for(Ring r: rings){
+                    r.stop();
+                }
+                createExplosion();
+                playBall = null;
+
             }
         }
 
@@ -233,15 +245,13 @@ public class PlayScreen extends InputAdapter implements Screen {
 
                 int r = ring.radius;
 
-                //Gdx.app.log("radius", String.valueOf(r));
                 if(playBall == null){
                     Gdx.app.log("WTF","playball null");
                     return;
                 }
                 float diff = r - playBall.getRotateRadius();
 
-                //Gdx.app.log("diff", String.valueOf(diff));
-                if(diff<7.5f && diff > 0){
+               if(diff<7.5f && diff > 0){
                     if(ring.getClass().equals(NormalRing.class)){
                         playBall.setAttachedRing((NormalRing) ring);
                         score.increase();
@@ -255,49 +265,29 @@ public class PlayScreen extends InputAdapter implements Screen {
                         int arcCount = cmr.getArcNum();
                         float rot = cmr.getRot();
 
-                        //Gdx.app.log("arccount", String.valueOf(arcCount));
 
                         for (int j = 0; j < arcCount; j++) {
 
-                            //Gdx.app.log("check angle", String.valueOf(360/arcCount * j - rot));
                             float q1 = 360/arcCount * j + rot;
                             float q2 = q1 + 180/arcCount  ;
 
                             float ballAngle1 = ballAngle;
 
-                            //Gdx.app.log("q1 : q2 : ballAngle",""+q1+" "+q2+" "+ballAngle1);
-
 
                             if(ballAngle1 >= (q1-5) && ballAngle1 <= (q2+5) ){
 
-                                //Gdx.app.log(" Collision","detected");
-
-                                int n = MathUtils.random(10,20);
-                                for(int k=0;k< n;k++){
-
-                                    ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
-                                    explosionTriangles.add(explosionTriangle);
-
-                                }
+                                createExplosion();
 
                                 for(Ring mRing: rings){
                                     mRing.stop();
                                 }
                                 stopped = true;
                                 playBall = null;
-                                Gdx.input.vibrate(500);
                             }
 
                             else if(ballAngle1+360 >= (q1-5) && ballAngle1+360 <= (q2+5)) {
-                                // Gdx.app.log(" Collision","detected");
 
-                                int n = MathUtils.random(10,20);
-                                for(int k=0;k< n;k++){
-
-                                    ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
-                                    explosionTriangles.add(explosionTriangle);
-
-                                }
+                                createExplosion();
 
                                 for(Ring mRing: rings){
                                     mRing.stop();
@@ -305,7 +295,6 @@ public class PlayScreen extends InputAdapter implements Screen {
 
                                 stopped = true;
                                 playBall = null;
-                                Gdx.input.vibrate(500);
                             }
                         }
                     }
@@ -318,6 +307,19 @@ public class PlayScreen extends InputAdapter implements Screen {
     public void resize(int width, int height) {
         //Gdx.app.log("width", String.valueOf(width));
         extendViewport.update(width,height,true);
+    }
+
+
+    public void createExplosion(){
+
+        int n = MathUtils.random(20,30);
+        for(int k=0;k< n;k++){
+            ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
+            explosionTriangles.add(explosionTriangle);
+        }
+
+        Gdx.input.vibrate(500);
+
     }
 
     @Override
@@ -359,4 +361,16 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         return true;
     }
+
+    public boolean keyDown (int keycode) {
+
+        if(keycode == Input.Keys.SPACE){
+            if(playBall!=null) {
+                lastAttachedRing = playBall.detach();
+            }
+        }
+
+        return false;
+    }
+
 }
