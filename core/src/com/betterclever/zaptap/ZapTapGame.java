@@ -11,15 +11,22 @@ public class ZapTapGame extends Game {
 	PlayScreen playScreen;
 	Music music ;
 
+	PlayGameServices playGameServices;
+	HomeScreen homeScreen;
+
+	public ZapTapGame(PlayGameServices playGameServices) {
+		this.playGameServices = playGameServices;
+	}
+
 	@Override
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("background-skyline.mp3"));
 		music.play();
 		music.setLooping(true);
 		music.setVolume(1f);
-		playScreen = new PlayScreen(this);
-		//setScreen(new HomeScreen(this));
-		setScreen(playScreen);
+		homeScreen = new HomeScreen(this);
+		setScreen(homeScreen);
+		//setScreen(playScreen);
 	}
 
 	public void resetPlay(){
@@ -28,4 +35,12 @@ public class ZapTapGame extends Game {
 		setScreen(playScreen);
 	}
 
+	public void startPlay(){
+		playScreen = new PlayScreen(this);
+		setScreen(playScreen);
+	}
+
+	public PlayGameServices getPlayGameServices() {
+		return playGameServices;
+	}
 }

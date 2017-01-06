@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">ZapTap</string>
-
+    <string name="app_id">229197827485</string>
+    <string name="leaderboard_highest">Highscore</string>
+    <string name="achievement_dum_dum">Sample Achievement</string>
 </resources>

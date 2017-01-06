@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
@@ -246,7 +245,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                     continue;
                 }
 
-                int r = ring.radius;
+                float r = ring.radius;
 
                 if(playBall == null){
                     Gdx.app.log("WTF","playball null");
@@ -320,7 +319,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
             explosionTriangles.add(explosionTriangle);
         }
-
+        game.getPlayGameServices().submitScore(score.getScore());
         Gdx.input.vibrate(500);
 
     }

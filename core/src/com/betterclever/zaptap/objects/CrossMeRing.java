@@ -26,7 +26,7 @@ public class CrossMeRing extends Ring {
     public void render(float delta){
 
         if(!stopped) {
-            radius -= delta;
+            radius -= 60*delta;
             rot += (40 * delta);
             rot %= 360;
         }

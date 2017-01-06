@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.betterclever.zaptap.Constants;
-import com.sun.org.apache.bcel.internal.classfile.Constant;
-import com.sun.org.apache.xpath.internal.operations.String;
 
 /**
  * Created by betterclever on 01/01/17.
@@ -37,5 +35,9 @@ public class Score {
 
     public void increase(){
         score++;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

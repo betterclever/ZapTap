@@ -19,7 +19,7 @@ public class PlayBall {
     private ShapeRenderer renderer;
     private NormalRing attachedRing;
     private Circle bound;
-    private int rotateRadius = 0;
+    private float rotateRadius = 0;
     private float angle;
     private float time;
     private Vector2 position;
@@ -115,7 +115,7 @@ public class PlayBall {
         return attachedRing == null;
     }
 
-    public int getRotateRadius() {
+    public float getRotateRadius() {
         return rotateRadius;
     }
 

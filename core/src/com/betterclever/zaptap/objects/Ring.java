@@ -6,12 +6,12 @@ package com.betterclever.zaptap.objects;
 
 public abstract class Ring {
 
-    public int radius;
+    public float radius;
     boolean stopped = false;
 
     public abstract void render(float delta);
 
-    public int getRadius() {
+    public float getRadius() {
         return radius;
     }
 

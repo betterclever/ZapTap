@@ -37,8 +37,8 @@ public class ExplosionTriangle {
 
         time += delta;
 
-        position.x += speedFactor * 8 * MathUtils.sinDeg(angle);
-        position.y += speedFactor * 8 * MathUtils.cosDeg(angle);
+        position.x += speedFactor * 400 * delta * MathUtils.sinDeg(angle);
+        position.y += speedFactor * 400 * delta * MathUtils.cosDeg(angle);
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(color);

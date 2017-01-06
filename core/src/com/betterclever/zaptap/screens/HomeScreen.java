@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,7 +29,9 @@ public class HomeScreen extends InputAdapter implements Screen {
 
     ExtendViewport viewport;
 
-    Ripple ripple;
+    Ripple playRippleButton;
+    Ripple testRipple;
+    Ripple testRipple2;
 
     Color backgroundColor;
     Color destColor;
@@ -43,12 +46,17 @@ public class HomeScreen extends InputAdapter implements Screen {
     BitmapFont logoFont;
     BitmapFont otherFont;
 
+    FPSLogger fpsLogger;
+
     public HomeScreen(ZapTapGame zapTapGame) {
         game = zapTapGame;
     }
 
     @Override
     public void show() {
+
+        fpsLogger = new FPSLogger();
+
         backgroundColor = new Color(Color.TEAL);
         destColor = new Color(Color.MAGENTA);
         colorAction = new ColorAction();
@@ -57,10 +65,20 @@ public class HomeScreen extends InputAdapter implements Screen {
         colorAction.setEndColor(destColor);
 
         renderer = new ShapeRenderer();
-        ripple = new Ripple(renderer,
+        playRippleButton = new Ripple(renderer,
                             new Vector2(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/3),
                             60,
                             100);
+
+        testRipple = new Ripple(renderer,
+                new Vector2(Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
+                60,
+                100);
+
+        testRipple2 = new Ripple(renderer,
+                new Vector2(3*Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
+                60,
+                100);
 
         batch = new SpriteBatch();
         viewport = new ExtendViewport(Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT);
@@ -74,6 +92,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         logoFont = generator.generateFont(parameter);
         generator.dispose();
 
+        Gdx.input.setInputProcessor(this);
         FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
         parameter.size = 30;
         otherFont = generator2.generateFont(parameter);
@@ -86,11 +105,15 @@ public class HomeScreen extends InputAdapter implements Screen {
         Gdx.gl.glClearColor(backgroundColor.r,backgroundColor.g,backgroundColor.b,backgroundColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        //fpsLogger.log();
+
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         renderer.setProjectionMatrix(viewport.getCamera().combined);
 
-        ripple.render(delta);
+        playRippleButton.render(delta);
+        testRipple.render(delta);
+        testRipple2.render(delta);
 
         chameleonizeTheBackground(delta);
         writeLogo();
@@ -142,5 +165,27 @@ public class HomeScreen extends InputAdapter implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        boolean value = super.touchDown(screenX, screenY, pointer, button);
+
+        Vector2 position = viewport.unproject(new Vector2(screenX,screenY));
+        if(playRippleButton.isTouched(position)){
+            game.startPlay();
+        }
+
+        if(testRipple.isTouched(position)){
+            Gdx.app.log(TAG,"Here I tapped");
+            game.getPlayGameServices().signIn();
+            Gdx.app.log(TAG, String.valueOf(game.getPlayGameServices().isSignedIn()));
+        }
+
+        if(testRipple2.isTouched(position)){
+            game.getPlayGameServices().showScore();
+        }
+
+        return value;
     }
 }

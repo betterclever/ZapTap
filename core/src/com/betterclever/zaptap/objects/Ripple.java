@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -25,6 +26,7 @@ public class Ripple {
     float timeCounter;
 
     Color alphaWhite;
+    Circle circle;
 
     boolean isIncreasing = true;
 
@@ -33,6 +35,7 @@ public class Ripple {
         this.position = position;
         this.maxRadius = maxRadius;
         this.minRadius = minRadius;
+        circle = new Circle(position,maxRadius);
         curRadius = minRadius;
         alphaWhite = new Color(1,1,1,0.5f);
     }
@@ -70,4 +73,12 @@ public class Ripple {
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
     }
+
+    public boolean isTouched(Vector2 position){
+        if(circle.contains(position)){
+            return true;
+        }
+        return false;
+    }
+
 }
