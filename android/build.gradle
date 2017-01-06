@@ -19,7 +19,7 @@ android {
     }
     defaultConfig {
         applicationId "com.betterclever.zaptap"
-        minSdkVersion 8
+        minSdkVersion 15
         targetSdkVersion 25
     }
 }

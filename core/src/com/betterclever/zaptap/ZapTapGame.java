@@ -17,8 +17,9 @@ public class ZapTapGame extends Game {
 		music.play();
 		music.setLooping(true);
 		music.setVolume(1f);
-		//playScreen = new PlayScreen(this);
-		setScreen(new HomeScreen(this));
+		playScreen = new PlayScreen(this);
+		//setScreen(new HomeScreen(this));
+		setScreen(playScreen);
 	}
 
 	public void resetPlay(){
