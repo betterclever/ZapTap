@@ -2,6 +2,7 @@ package com.betterclever.zaptap.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.objects.Ring;
 
@@ -14,6 +15,8 @@ public class CrossMeRing extends Ring {
     ShapeRenderer renderer;
     int arcNum;
     float rot = 0;
+    int speed;
+    int q;
 
     public CrossMeRing(ShapeRenderer renderer, int arcNum){
 
@@ -21,13 +24,18 @@ public class CrossMeRing extends Ring {
         this.arcNum = arcNum;
 
         radius = 200;
+        speed = MathUtils.random(40,60);
+        q = MathUtils.random(-1,1);
+        if(q == -1){
+            q = -2;
+        }
     }
 
     public void render(float delta){
 
         if(!stopped) {
             radius -= 60*delta;
-            rot += (40 * delta);
+            rot += (speed * q * delta);
             rot %= 360;
         }
 

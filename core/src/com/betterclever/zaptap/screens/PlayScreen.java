@@ -82,7 +82,6 @@ public class PlayScreen extends InputAdapter implements Screen {
         bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
         playBall = null;
-        radius = 200;
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -95,8 +94,6 @@ public class PlayScreen extends InputAdapter implements Screen {
         parameter.color = Color.BLACK;
         restartButtonFont = generator.generateFont(parameter);
         generator.dispose();
-
-
     }
 
     @Override
@@ -104,12 +101,6 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         time += 2*delta;
         timer += delta;
-
-        radius-=delta;
-
-        if(radius < 10){
-            radius =200;
-        }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -253,7 +244,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 }
                 float diff = r - playBall.getRotateRadius();
 
-               if(diff<7.5f && diff > 0){
+               if(diff<7.5f && diff > -7.5){
                     if(ring.getClass().equals(NormalRing.class)){
                         playBall.setAttachedRing((NormalRing) ring);
                         score.increase();
@@ -339,6 +330,19 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     }
 
+    public void reset(){
+
+        explosionTriangles.clear();
+        rings.clear();
+        time = 0;
+        timer = 0;
+        sw = 1;
+        playBall = null;
+        stopped = false;
+        score.reset();
+
+    }
+
     @Override
     public void dispose() {
         spriteBatch.dispose();
@@ -360,7 +364,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             Vector2 point = new Vector2(screenX,screenY);
             point =  extendViewport.unproject(point);
             if(bounds.contains(point)){
-                game.resetPlay();
+                reset();
             }
         }
 
