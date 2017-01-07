@@ -69,6 +69,7 @@ public class PlayScreen extends InputAdapter implements Screen {
     Rectangle goToHomeBounds;
 
     int playMode;
+    Preferences preferences;
 
     public PlayScreen(int mode, ZapTapGame zapTapGame) {
         game = zapTapGame;
@@ -92,7 +93,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         time = 0;
         timer = 0;
 
-        Preferences preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
+        preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
         int playNum = preferences.getInteger(Constants.PLAY_COUNT);
         playNum++;
         preferences.putInteger(Constants.PLAY_COUNT,playNum);
@@ -411,6 +412,13 @@ public class PlayScreen extends InputAdapter implements Screen {
         gameOver = false;
         score.reset();
 
+        int playNum = preferences.getInteger(Constants.PLAY_COUNT);
+        playNum++;
+        preferences.putInteger(Constants.PLAY_COUNT,playNum);
+
+        if(playNum >= 50){
+            game.getPlayGameServices().unlockAchievement();
+        }
     }
 
     public void reset(){
