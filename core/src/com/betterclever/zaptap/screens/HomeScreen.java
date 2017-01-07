@@ -110,7 +110,6 @@ public class HomeScreen extends InputAdapter implements Screen {
         buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",buttonFont,batch);
         buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",buttonFont,batch);
         buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",buttonFont,batch);
-
     }
 
     @Override

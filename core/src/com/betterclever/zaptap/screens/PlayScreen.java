@@ -3,6 +3,7 @@ package com.betterclever.zaptap.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -90,6 +91,15 @@ public class PlayScreen extends InputAdapter implements Screen {
         bounds = new Rectangle();
         time = 0;
         timer = 0;
+
+        Preferences preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
+        int playNum = preferences.getInteger(Constants.PLAY_COUNT);
+        playNum++;
+        preferences.putInteger(Constants.PLAY_COUNT,playNum);
+
+        if(playNum >= 50){
+            game.getPlayGameServices().unlockAchievement();
+        }
 
         bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
@@ -290,7 +300,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 }
                 float diff = r - playBall.getRotateRadius();
 
-               if(diff<7.5f && diff > -7.5){
+               if(diff<7.5f && diff > -10){
                     if(ring.getClass().equals(NormalRing.class)){
                         playBall.setAttachedRing((NormalRing) ring);
                         score.increase();
