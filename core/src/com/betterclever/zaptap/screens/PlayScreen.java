@@ -52,12 +52,21 @@ public class PlayScreen extends InputAdapter implements Screen {
     Score score;
 
     boolean stopped = false;
+    boolean paused = false;
+    boolean gameOver = false;
+
     Color bannerColor;
 
     BitmapFont font;
     BitmapFont restartButtonFont;
+    BitmapFont goToHomeFont;
+
+    Texture pauseButton;
 
     Rectangle bounds;
+    Rectangle pauseButtonBounds;
+    Rectangle goToHomeBounds;
+
     int playMode;
 
     public PlayScreen(int mode, ZapTapGame zapTapGame) {
@@ -74,6 +83,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         extendViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
         Gdx.input.setInputProcessor(this);
+        Gdx.input.setCatchBackKey(true);
         rings = new DelayedRemovalArray<Ring>();
         explosionTriangles = new DelayedRemovalArray<ExplosionTriangle>();
 
@@ -84,6 +94,11 @@ public class PlayScreen extends InputAdapter implements Screen {
         bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
         playBall = null;
+
+        pauseButton = new Texture("pause.png");
+
+        pauseButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,Constants.WORLD_HEIGHT-100,100,100);
+        goToHomeBounds = new Rectangle(Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6-100,300,100);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -96,13 +111,22 @@ public class PlayScreen extends InputAdapter implements Screen {
         parameter.color = Color.BLACK;
         restartButtonFont = generator.generateFont(parameter);
         generator.dispose();
+
+        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
+        parameter.color = Color.WHITE;
+        goToHomeFont = generator1.generateFont(parameter);
+        generator1.dispose();
+
+        reset(playMode);
     }
 
     @Override
     public void render(float delta) {
 
-        time += 2*delta;
-        timer += delta;
+        if(!stopped) {
+            time += 2 * delta;
+            timer += delta;
+        }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -162,6 +186,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         if (playBall!=null) {
             if (playBall.getRotateRadius() > 300) {
                 stopped = true;
+                gameOver = true;
                 for (Ring r : rings) {
                     r.stop();
                 }
@@ -171,6 +196,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
             else if (playBall.getRotateRadius() < 12) {
                 stopped = true;
+                gameOver = true;
                 for(Ring r: rings){
                     r.stop();
                 }
@@ -180,15 +206,33 @@ public class PlayScreen extends InputAdapter implements Screen {
             }
         }
 
+        if(!stopped){
+            drawPauseButton();
+        }
+
         if(stopped){
+
             drawBanner();
-            writeGameOver();
-            drawRestartButton();
+            writeText("Go to Home",Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6,goToHomeFont);
+            if(gameOver) {
+                writeText("Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
+                drawButtonWithText("RESTART");
+            }
+            else if(paused) {
+                writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
+                drawButtonWithText("RESUME");
+            }
         }
 
     }
 
-    private void drawRestartButton() {
+    private void drawPauseButton(){
+        spriteBatch.begin();
+        spriteBatch.draw(pauseButton,Constants.WORLD_WIDTH-60,Constants.WORLD_HEIGHT-60,40,40);
+        spriteBatch.end();
+    }
+
+    private void drawButtonWithText(String text) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.rect(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
@@ -197,13 +241,13 @@ public class PlayScreen extends InputAdapter implements Screen {
         bounds.set(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
 
         spriteBatch.begin();
-        restartButtonFont.draw(spriteBatch,"RESTART",Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20);
+        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20);
         spriteBatch.end();
     }
 
-    private void writeGameOver() {
+    private void writeText(String text, float scrX, float scrY, BitmapFont font) {
         spriteBatch.begin();
-        font.draw(spriteBatch,"Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50);
+        font.draw(spriteBatch,text,scrX,scrY);
         spriteBatch.end();
     }
 
@@ -213,7 +257,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(bannerColor);
-        shapeRenderer.rect(0,Constants.WORLD_HEIGHT/4,Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT/2.3f);
+        shapeRenderer.rect(0,0,Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT/1.5f);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -277,6 +321,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                                     mRing.stop();
                                 }
                                 stopped = true;
+                                gameOver = true;
                                 playBall = null;
                             }
 
@@ -289,6 +334,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                                 }
 
                                 stopped = true;
+                                gameOver = true;
                                 playBall = null;
                             }
                         }
@@ -319,16 +365,41 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     @Override
     public void pause() {
-
+        paused =true;
+        stopped = true;
+        for (Ring r:rings){
+            r.stop();
+        }
     }
 
     @Override
     public void resume() {
-
+        paused = false;
+        if(gameOver!=true){
+            stopped = false;
+        }
+        for (Ring r:rings){
+            r.start();
+        }
     }
 
     @Override
     public void hide() {
+
+    }
+
+    public void reset(int playMode){
+
+        explosionTriangles.clear();
+        rings.clear();
+        time = 0;
+        timer = 0;
+        sw = 1;
+        this.playMode = playMode;
+        playBall = null;
+        stopped = false;
+        gameOver = false;
+        score.reset();
 
     }
 
@@ -341,6 +412,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         sw = 1;
         playBall = null;
         stopped = false;
+        gameOver = false;
         score.reset();
 
     }
@@ -357,17 +429,34 @@ public class PlayScreen extends InputAdapter implements Screen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         super.touchDown(screenX, screenY, pointer, button);
 
+        Vector2 touchPos = extendViewport.unproject(new Vector2(screenX,screenY));
+        if(!paused){
+            if(pauseButtonBounds.contains(touchPos)){
+                pause();
+                return true;
+            }
+        }
+
+
+        if(stopped){
+            if(bounds.contains(touchPos)){
+                if(paused){
+                    resume();
+                }
+                else if(gameOver) {
+                    reset();
+                }
+            }
+            else if(goToHomeBounds.contains(touchPos)){
+                game.setHomeScreen();
+            }
+            return true;
+        }
+
+
         if(playBall!=null) {
             lastAttachedRing = playBall.detach();
             Gdx.app.log("Hi", "touchDown");
-        }
-
-        if(stopped){
-            Vector2 point = new Vector2(screenX,screenY);
-            point =  extendViewport.unproject(point);
-            if(bounds.contains(point)){
-                reset();
-            }
         }
 
         return true;
@@ -381,7 +470,22 @@ public class PlayScreen extends InputAdapter implements Screen {
             }
         }
 
+        if(keycode == Input.Keys.ESCAPE){
+            if(!stopped){
+                pause();
+            }
+        }
+
+        if(keycode == Input.Keys.BACK){
+            if(!stopped) {
+                pause();
+            }
+        }
+
         return false;
     }
 
+    public void setPlayMode(int mode) {
+        playMode = mode;
+    }
 }

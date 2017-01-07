@@ -19,7 +19,7 @@ public class Score implements RenderableObject {
 
     public Score(SpriteBatch spriteBatch){
         batch = spriteBatch;
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ModeX.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 100;
         parameter.color= Color.WHITE;

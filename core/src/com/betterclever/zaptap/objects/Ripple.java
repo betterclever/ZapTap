@@ -51,7 +51,7 @@ public class Ripple implements RenderableObject{
 
         alphaWhite.a = 1 - (curRadius * (0.4f)/  (maxRadius - minRadius))/speedFactor;
 
-        Gdx.app.log("alpha", String.valueOf(alphaWhite.a));
+        //Gdx.app.log("alpha", String.valueOf(alphaWhite.a));
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

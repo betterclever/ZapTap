@@ -45,6 +45,7 @@ public class HomeScreen extends InputAdapter implements Screen {
     private ShapeRenderer renderer;
 
     private Texture scoreTrophy;
+    private Texture achievementMedal;
     private ZapTapGame game;
 
     private CircleButton leaderBoard;
@@ -73,6 +74,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         colorAction.setEndColor(destColor);
 
         scoreTrophy = new Texture("trophy.png");
+        achievementMedal = new Texture("medal.png");
+
         renderer = new ShapeRenderer();
         playRippleButton = new Ripple(renderer,
                             new Vector2(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/3),
@@ -130,6 +133,7 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         batch.begin();
         batch.draw(scoreTrophy,3*Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
+        batch.draw(achievementMedal,Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
         batch.end();
 
 
@@ -203,9 +207,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
 
         if(firstButton.isTouched(position)){
-            Gdx.app.log(TAG,"Here I tapped");
-            game.getPlayGameServices().signIn();
-            Gdx.app.log(TAG, String.valueOf(game.getPlayGameServices().isSignedIn()));
+            game.getPlayGameServices().showAchievement();
         }
 
         if(leaderBoard.isTouched(position)){
@@ -215,6 +217,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         if(playTapped){
             for (int i = 0; i < buttons.length; i++) {
                 if(buttons[i].isTouched(position)){
+                    playTapped = false;
                     game.startPlay(i);
                 }
             }

@@ -18,6 +18,10 @@ public class ZapTapGame extends Game {
 		this.playGameServices = playGameServices;
 	}
 
+	public ZapTapGame(){
+        playGameServices = null;
+    }
+
 	@Override
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("background-skyline.mp3"));
@@ -30,8 +34,15 @@ public class ZapTapGame extends Game {
 	}
 
 	public void startPlay(int mode){
-		playScreen = new PlayScreen(mode,this);
+		if(playScreen == null) {
+			playScreen = new PlayScreen(mode, this);
+		}
+		playScreen.setPlayMode(mode);
 		setScreen(playScreen);
+	}
+
+	public void setHomeScreen(){
+		setScreen(homeScreen);
 	}
 
 	public PlayGameServices getPlayGameServices() {
