@@ -16,7 +16,6 @@ public class CrossMeRing extends Ring {
     int arcNum;
     float rot = 0;
     int speed;
-    int q;
 
     public CrossMeRing(ShapeRenderer renderer, int arcNum){
 
@@ -24,18 +23,14 @@ public class CrossMeRing extends Ring {
         this.arcNum = arcNum;
 
         radius = 200;
-        speed = MathUtils.random(40,60);
-        q = MathUtils.random(-1,1);
-        if(q == -1){
-            q = -2;
-        }
+        speed = MathUtils.random(40,120);
     }
 
     public void render(float delta){
 
         if(!stopped) {
             radius -= 60*delta;
-            rot += (speed * q * delta);
+            rot += (speed * delta);
             rot %= 360;
         }
 

@@ -1,5 +1,6 @@
 package com.betterclever.zaptap;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -119,7 +120,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 		if (isSignedIn() == true)
 		{
 			Games.Leaderboards.submitScore(gameHelper.getApiClient(),
-					getString(R.string.leaderboard_highest), highScore);
+					getString(R.string.leaderboard_highscore), highScore);
 
             Gdx.app.log(TAG, String.valueOf(highScore));
 		}
@@ -144,7 +145,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 		if (isSignedIn() == true)
 		{
 			startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient(),
-					getString(R.string.leaderboard_highest)), requestCode);
+					getString(R.string.leaderboard_highscore)), requestCode);
 		}
 		else
 		{

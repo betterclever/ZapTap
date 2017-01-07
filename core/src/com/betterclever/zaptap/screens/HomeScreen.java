@@ -41,6 +41,7 @@ public class HomeScreen extends InputAdapter implements Screen {
     SpriteBatch batch;
     ShapeRenderer renderer;
 
+    Texture scoreTrophy;
     ZapTapGame game;
 
     BitmapFont logoFont;
@@ -64,6 +65,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         colorAction.setDuration(2f);
         colorAction.setEndColor(destColor);
 
+        scoreTrophy = new Texture("trophy.png");
         renderer = new ShapeRenderer();
         playRippleButton = new Ripple(renderer,
                             new Vector2(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/3),
@@ -117,6 +119,10 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         chameleonizeTheBackground(delta);
         writeLogo();
+
+        batch.begin();
+        batch.draw(scoreTrophy,3*Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
+        batch.end();
 
     }
 

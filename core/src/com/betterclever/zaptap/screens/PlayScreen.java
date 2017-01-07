@@ -129,7 +129,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         rings.begin();
         for (int i = 0; i < rings.size; i++) {
-            if(rings.get(i).radius < 20){
+            if(rings.get(i).radius < 10){
                 rings.removeIndex(i);
             }
         }
@@ -167,7 +167,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 playBall = null;
             }
 
-            else if (playBall.getRotateRadius() < 30) {
+            else if (playBall.getRotateRadius() < 12) {
                 stopped = true;
                 for(Ring r: rings){
                     r.stop();
