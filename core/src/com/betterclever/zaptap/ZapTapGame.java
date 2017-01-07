@@ -29,14 +29,8 @@ public class ZapTapGame extends Game {
 		//setScreen(playScreen);
 	}
 
-	public void resetPlay(){
-		playScreen.dispose();
-		playScreen = new PlayScreen(this);
-		setScreen(playScreen);
-	}
-
-	public void startPlay(){
-		playScreen = new PlayScreen(this);
+	public void startPlay(int mode){
+		playScreen = new PlayScreen(mode,this);
 		setScreen(playScreen);
 	}
 

@@ -60,6 +60,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         game = zapTapGame;
     }
 
+    boolean playTapped = false;
+
     @Override
     public void show() {
 
@@ -76,16 +78,6 @@ public class HomeScreen extends InputAdapter implements Screen {
                             new Vector2(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/3),
                             60,
                             100);
-
-        /*testRipple = new Ripple(renderer,
-                new Vector2(Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
-                60,
-                100);
-
-        testRipple2 = new Ripple(renderer,
-                new Vector2(3*Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
-                60,
-                100);*/
 
         leaderBoard = new CircleButton(renderer,3*Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3,60);
         firstButton = new CircleButton(renderer,Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3,60);
@@ -106,15 +98,15 @@ public class HomeScreen extends InputAdapter implements Screen {
         FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
         parameter.size = 30;
         otherFont = generator2.generateFont(parameter);
-        parameter.size = 15;
+        parameter.size = 20;
         buttonFont = generator2.generateFont(parameter);
         generator2.dispose();
 
         buttons = new Button[4];
-        buttons[0] = new Button(renderer,1*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Easy",buttonFont,batch);
-        buttons[1] = new Button(renderer,2*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Medium",buttonFont,batch);
-        buttons[2] = new Button(renderer,3*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Hard",buttonFont,batch);
-        buttons[3] = new Button(renderer,4*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Insane",buttonFont,batch);
+        buttons[0] = new Button(renderer,10,10,180,60,"Easy",buttonFont,batch);
+        buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",buttonFont,batch);
+        buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",buttonFont,batch);
+        buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",buttonFont,batch);
 
     }
 
@@ -124,15 +116,11 @@ public class HomeScreen extends InputAdapter implements Screen {
         Gdx.gl.glClearColor(backgroundColor.r,backgroundColor.g,backgroundColor.b,backgroundColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //fpsLogger.log();
-
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         renderer.setProjectionMatrix(viewport.getCamera().combined);
 
         playRippleButton.render(delta);
-        //testRipple.render(delta);
-        //testRipple2.render(delta);
 
         firstButton.render(delta);
         leaderBoard.render(delta);
@@ -144,8 +132,11 @@ public class HomeScreen extends InputAdapter implements Screen {
         batch.draw(scoreTrophy,3*Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
         batch.end();
 
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].render(delta);
+
+        if(playTapped) {
+            for (int i = 0; i < buttons.length; i++) {
+                buttons[i].render(delta);
+            }
         }
 
     }
@@ -153,7 +144,12 @@ public class HomeScreen extends InputAdapter implements Screen {
     private void writeLogo() {
         batch.begin();
         logoFont.draw(batch,"Zap Tap",Constants.WORLD_WIDTH/4,5*Constants.WORLD_HEIGHT/6);
-        otherFont.draw(batch,"PLAY",Constants.WORLD_WIDTH/2-55,Constants.WORLD_HEIGHT/3+10);
+        if(playTapped) {
+            otherFont.draw(batch, "MODE", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
+        }
+        else {
+            otherFont.draw(batch, "PLAY", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
+        }
         batch.end();
     }
 
@@ -203,7 +199,7 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         Vector2 position = viewport.unproject(new Vector2(screenX,screenY));
         if(playRippleButton.isTouched(position)){
-            game.startPlay();
+            playTapped = !playTapped;
         }
 
         if(firstButton.isTouched(position)){
@@ -214,6 +210,14 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         if(leaderBoard.isTouched(position)){
             game.getPlayGameServices().showScore();
+        }
+
+        if(playTapped){
+            for (int i = 0; i < buttons.length; i++) {
+                if(buttons[i].isTouched(position)){
+                    game.startPlay(i);
+                }
+            }
         }
 
         return value;

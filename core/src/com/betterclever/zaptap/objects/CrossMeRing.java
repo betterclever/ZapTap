@@ -17,13 +17,35 @@ public class CrossMeRing extends Ring {
     float rot = 0;
     int speed;
 
-    public CrossMeRing(ShapeRenderer renderer, int arcNum){
+    public CrossMeRing(ShapeRenderer renderer, int mode){
 
         this.renderer = renderer;
-        this.arcNum = arcNum;
-
         radius = 200;
-        speed = MathUtils.random(40,120);
+
+        setParamsByMode(mode);
+    }
+
+    private void setParamsByMode(int mode) {
+
+        switch (mode){
+            case Constants.EASY_MODE:
+                speed = 40;
+                arcNum = MathUtils.random(2,5);
+                break;
+            case Constants.MEDIUM_MODE:
+                speed = 60;
+                arcNum = MathUtils.random(2,6);
+                break;
+            case Constants.HARD_MODE:
+                speed = MathUtils.random(50,80);
+                arcNum = MathUtils.random(3,6);
+                break;
+            case Constants.INSANE_MODE:
+                speed = MathUtils.random(40,120);
+                arcNum = MathUtils.random(3,6);
+                break;
+        }
+
     }
 
     public void render(float delta){

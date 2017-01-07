@@ -58,9 +58,11 @@ public class PlayScreen extends InputAdapter implements Screen {
     BitmapFont restartButtonFont;
 
     Rectangle bounds;
+    int playMode;
 
-    public PlayScreen(ZapTapGame zapTapGame) {
+    public PlayScreen(int mode, ZapTapGame zapTapGame) {
         game = zapTapGame;
+        playMode = mode;
     }
 
     @Override
@@ -116,7 +118,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 // dirty hack
                 sw = -sw;
                 if (sw == 1) {
-                    rings.add(new CrossMeRing(shapeRenderer, MathUtils.random(2, 6)));
+                    rings.add(new CrossMeRing(shapeRenderer,playMode));
                 } else {
                     NormalRing q = new NormalRing(shapeRenderer);
                     rings.add(q);
@@ -310,7 +312,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
             explosionTriangles.add(explosionTriangle);
         }
-        game.getPlayGameServices().submitScore(score.getScore(),Constants.EASY_MODE);
+        game.getPlayGameServices().submitScore(score.getScore(),playMode);
         Gdx.input.vibrate(500);
 
     }
