@@ -12,7 +12,7 @@ import javax.swing.plaf.synth.ColorType;
  * Created by betterclever on 24/12/16.
  */
 
-public class ExplosionTriangle {
+public class ExplosionTriangle implements RenderableObject {
 
     ShapeRenderer renderer;
     Vector2 position;

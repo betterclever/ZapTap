@@ -14,9 +14,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.ZapTapGame;
+import com.betterclever.zaptap.objects.Button;
+import com.betterclever.zaptap.objects.CircleButton;
 import com.betterclever.zaptap.objects.Ripple;
 
 /**
@@ -27,27 +30,31 @@ public class HomeScreen extends InputAdapter implements Screen {
 
     private static final String TAG = HomeScreen.class.getSimpleName();
 
-    ExtendViewport viewport;
+    private ExtendViewport viewport;
 
-    Ripple playRippleButton;
-    Ripple testRipple;
-    Ripple testRipple2;
+    private Ripple playRippleButton;
+    private Ripple testRipple;
+    private Ripple testRipple2;
 
-    Color backgroundColor;
-    Color destColor;
-    ColorAction colorAction;
-    float counter;
+    private Color backgroundColor;
+    private Color destColor;
+    private ColorAction colorAction;
+    private float counter;
 
-    SpriteBatch batch;
-    ShapeRenderer renderer;
+    private SpriteBatch batch;
+    private ShapeRenderer renderer;
 
-    Texture scoreTrophy;
-    ZapTapGame game;
+    private Texture scoreTrophy;
+    private ZapTapGame game;
 
-    BitmapFont logoFont;
-    BitmapFont otherFont;
+    private CircleButton leaderBoard;
+    private CircleButton firstButton;
 
-    FPSLogger fpsLogger;
+    private BitmapFont logoFont;
+    private BitmapFont otherFont;
+    private BitmapFont buttonFont;
+
+    private Button[] buttons;
 
     public HomeScreen(ZapTapGame zapTapGame) {
         game = zapTapGame;
@@ -55,8 +62,6 @@ public class HomeScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
-
-        fpsLogger = new FPSLogger();
 
         backgroundColor = new Color(Color.TEAL);
         destColor = new Color(Color.MAGENTA);
@@ -72,7 +77,7 @@ public class HomeScreen extends InputAdapter implements Screen {
                             60,
                             100);
 
-        testRipple = new Ripple(renderer,
+        /*testRipple = new Ripple(renderer,
                 new Vector2(Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
                 60,
                 100);
@@ -80,7 +85,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         testRipple2 = new Ripple(renderer,
                 new Vector2(3*Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3),
                 60,
-                100);
+                100);*/
+
+        leaderBoard = new CircleButton(renderer,3*Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3,60);
+        firstButton = new CircleButton(renderer,Constants.WORLD_WIDTH/4,Constants.WORLD_HEIGHT/3,60);
 
         batch = new SpriteBatch();
         viewport = new ExtendViewport(Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT);
@@ -98,7 +106,16 @@ public class HomeScreen extends InputAdapter implements Screen {
         FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
         parameter.size = 30;
         otherFont = generator2.generateFont(parameter);
+        parameter.size = 15;
+        buttonFont = generator2.generateFont(parameter);
         generator2.dispose();
+
+        buttons = new Button[4];
+        buttons[0] = new Button(renderer,1*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Easy",buttonFont,batch);
+        buttons[1] = new Button(renderer,2*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Medium",buttonFont,batch);
+        buttons[2] = new Button(renderer,3*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Hard",buttonFont,batch);
+        buttons[3] = new Button(renderer,4*Constants.WORLD_WIDTH/6+20,Constants.WORLD_HEIGHT/12,100,40,"Insane",buttonFont,batch);
+
     }
 
     @Override
@@ -114,8 +131,11 @@ public class HomeScreen extends InputAdapter implements Screen {
         renderer.setProjectionMatrix(viewport.getCamera().combined);
 
         playRippleButton.render(delta);
-        testRipple.render(delta);
-        testRipple2.render(delta);
+        //testRipple.render(delta);
+        //testRipple2.render(delta);
+
+        firstButton.render(delta);
+        leaderBoard.render(delta);
 
         chameleonizeTheBackground(delta);
         writeLogo();
@@ -123,6 +143,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         batch.begin();
         batch.draw(scoreTrophy,3*Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
         batch.end();
+
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].render(delta);
+        }
 
     }
 
@@ -182,13 +206,13 @@ public class HomeScreen extends InputAdapter implements Screen {
             game.startPlay();
         }
 
-        if(testRipple.isTouched(position)){
+        if(firstButton.isTouched(position)){
             Gdx.app.log(TAG,"Here I tapped");
             game.getPlayGameServices().signIn();
             Gdx.app.log(TAG, String.valueOf(game.getPlayGameServices().isSignedIn()));
         }
 
-        if(testRipple2.isTouched(position)){
+        if(leaderBoard.isTouched(position)){
             game.getPlayGameServices().showScore();
         }
 

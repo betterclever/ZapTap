@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
  * Created by betterclever on 05/01/17.
  */
 
-public class Ripple {
+public class Ripple implements RenderableObject{
 
     ShapeRenderer renderer;
     Vector2 position;
@@ -24,6 +24,7 @@ public class Ripple {
     float curRadius;
 
     float timeCounter;
+    float speedFactor;
 
     Color alphaWhite;
     Circle circle;
@@ -37,30 +38,20 @@ public class Ripple {
         this.minRadius = minRadius;
         circle = new Circle(position,maxRadius);
         curRadius = minRadius;
+        speedFactor =  ( maxRadius - minRadius ) / 40;
         alphaWhite = new Color(1,1,1,0.5f);
     }
 
     public void render(float delta){
 
-        /*if(isIncreasing)
-            curRadius += 30 * delta;
-        else curRadius -= 30 * delta;
-
-        if(curRadius > maxRadius){
-            isIncreasing = false;
-        }
-
-        if(curRadius < minRadius){
-            isIncreasing = true;
-        }*/
-
-        curRadius += 60*delta;
+        curRadius += speedFactor*60*delta;
         if(curRadius > maxRadius){
             curRadius = minRadius;
         }
 
-        alphaWhite.a = curRadius * (0.4f)/ (minRadius - maxRadius);
+        alphaWhite.a = 1 - (curRadius * (0.4f)/  (maxRadius - minRadius))/speedFactor;
 
+        Gdx.app.log("alpha", String.valueOf(alphaWhite.a));
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

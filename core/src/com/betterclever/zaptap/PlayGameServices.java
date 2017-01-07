@@ -9,7 +9,7 @@ public interface PlayGameServices {
     void signOut();
     void rateGame();
     void unlockAchievement();
-    void submitScore(int highScore);
+    void submitScore(int highScore, int mode);
     void showAchievement();
     void showScore();
     boolean isSignedIn();

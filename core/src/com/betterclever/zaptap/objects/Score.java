@@ -11,7 +11,7 @@ import com.betterclever.zaptap.Constants;
  * Created by betterclever on 01/01/17.
  */
 
-public class Score {
+public class Score implements RenderableObject {
 
     int score = 0;
     BitmapFont font;

@@ -4,7 +4,7 @@ package com.betterclever.zaptap.objects;
  * Created by betterclever on 22/12/16.
  */
 
-public abstract class Ring {
+public abstract class Ring implements RenderableObject{
 
     public float radius;
     boolean stopped = false;

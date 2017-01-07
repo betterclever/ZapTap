@@ -115,14 +115,26 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 	}
 
 	@Override
-	public void submitScore(int highScore)
+	public void submitScore(int highScore, int mode)
 	{
 		if (isSignedIn() == true)
 		{
+			String modeID = getStringByMode(mode);
+
 			Games.Leaderboards.submitScore(gameHelper.getApiClient(),
-					getString(R.string.leaderboard_highscore), highScore);
+					modeID, highScore);
 
             Gdx.app.log(TAG, String.valueOf(highScore));
+		}
+	}
+
+	private String getStringByMode(int mode) {
+		switch (mode){
+			case Constants.EASY_MODE : return getString(R.string.leaderboard_easy_highscore);
+			case Constants.MEDIUM_MODE: return getString(R.string.leaderboard_medium_highscore);
+			case Constants.HARD_MODE: return getString(R.string.leaderboard_hard_highscore);
+			case Constants.INSANE_MODE: return getString(R.string.leaderboard_insane_highscore);
+			default: return getString(R.string.leaderboard_easy_highscore);
 		}
 	}
 
@@ -144,8 +156,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 	{
 		if (isSignedIn() == true)
 		{
-			startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient(),
-					getString(R.string.leaderboard_highscore)), requestCode);
+			startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(gameHelper.getApiClient()), requestCode);
 		}
 		else
 		{

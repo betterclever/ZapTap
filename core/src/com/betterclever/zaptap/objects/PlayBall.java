@@ -13,7 +13,7 @@ import com.betterclever.zaptap.Constants;
  * Created by betterclever on 22/12/16.
  */
 
-public class PlayBall {
+public class PlayBall implements RenderableObject {
 
     private int radius;
     private ShapeRenderer renderer;

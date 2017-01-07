@@ -310,7 +310,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
             explosionTriangles.add(explosionTriangle);
         }
-        game.getPlayGameServices().submitScore(score.getScore());
+        game.getPlayGameServices().submitScore(score.getScore(),Constants.EASY_MODE);
         Gdx.input.vibrate(500);
 
     }
