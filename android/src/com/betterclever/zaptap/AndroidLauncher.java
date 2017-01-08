@@ -1,6 +1,7 @@
 package com.betterclever.zaptap;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,12 +44,45 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
             @Override
             public void onSignInSucceeded() {
+                storePlayerData();
             }
+
+
         };
 
         gameHelper.setup(gameHelperListener);
         submitAllScores();
 
+    }
+
+    private void storePlayerData() {
+
+        storeUserId();
+        submitAllScores();
+
+        for (int i = 0; i < 4; i++) {
+            final int mode = i;
+            Games.Leaderboards.loadCurrentPlayerLeaderboardScore(gameHelper.getApiClient(),
+                    getStringByMode(mode),
+                    LeaderboardVariant.TIME_SPAN_ALL_TIME,
+                    LeaderboardVariant.COLLECTION_PUBLIC).
+                    setResultCallback(new ResultCallback<Leaderboards.LoadPlayerScoreResult>() {
+
+                        @Override
+                        public void onResult(final Leaderboards.LoadPlayerScoreResult scoreResult) {
+                            // if (isScoreResultValid(scoreResult)) {
+                            LeaderboardScore c = scoreResult.getScore();
+                            if(c!=null) {
+                                int modef = mode;
+                                Gdx.app.log("score + mode", c.getRawScore() + "  " + modef);
+                                if (c.getRawScore() > preferences.getInteger(getStringByMode(modef))) {
+                                    preferences.putInteger(getStringByMode(modef), (int) c.getRawScore()).flush();
+                                }
+                                unlockByCurrentScore((int) c.getRawScore(), modef);
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
@@ -127,9 +161,10 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                 if (highScore > preferences.getInteger(modeID)) {
                     preferences.putInteger(modeID, highScore).flush();
                     submitAllScores();
-                    Games.Leaderboards.submitScore(gameHelper.getApiClient(),
-                            modeID, highScore);
                 }
+                Games.Leaderboards.submitScore(gameHelper.getApiClient(),
+                        modeID, highScore);
+
             } else {
                 resetScores();
                 if (highScore > preferences.getInteger(modeID)) {
@@ -216,11 +251,13 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                     public void onResult(final Leaderboards.LoadPlayerScoreResult scoreResult) {
                         // if (isScoreResultValid(scoreResult)) {
                         LeaderboardScore c = scoreResult.getScore();
-                        Gdx.app.log("score + mode",c.getRawScore() +  "  " + mode);
-                        if(c.getRawScore() > preferences.getInteger(getStringByMode(mode))){
-                            preferences.putInteger(getStringByMode(mode), (int) c.getRawScore()).flush();
+                        if(c!=null) {
+                            Gdx.app.log("score + mode", c.getRawScore() + "  " + mode);
+                            if (c.getRawScore() > preferences.getInteger(getStringByMode(mode))) {
+                                preferences.putInteger(getStringByMode(mode), (int) c.getRawScore()).flush();
+                            }
+                            unlockByCurrentScore((int) c.getRawScore(), mode);
                         }
-                        unlockByCurrentScore((int) c.getRawScore(),mode);
                     }
                 });
 
@@ -240,7 +277,10 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     private void storeUserId() {
         String playerID = Games.Players.getCurrentPlayer(gameHelper.getApiClient()).getPlayerId();
-        preferences.putString("playerid", playerID).flush();
+        if(! preferences.getString("playerid").equals(playerID)) {
+            preferences.putString("playerid", playerID).flush();
+            resetScores();
+        }
     }
 
     public void submitAllScores() {

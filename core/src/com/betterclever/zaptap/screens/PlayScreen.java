@@ -94,13 +94,6 @@ public class PlayScreen extends InputAdapter implements Screen {
         timer = 0;
 
         preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
-        int playNum = preferences.getInteger(Constants.PLAY_COUNT);
-        playNum++;
-        preferences.putInteger(Constants.PLAY_COUNT,playNum);
-
-        if(playNum >= 50){
-            game.getPlayGameServices().unlockAchievement();
-        }
 
         bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
@@ -411,10 +404,10 @@ public class PlayScreen extends InputAdapter implements Screen {
         stopped = false;
         gameOver = false;
         score.reset();
-
         int playNum = preferences.getInteger(Constants.PLAY_COUNT);
         playNum++;
-        preferences.putInteger(Constants.PLAY_COUNT,playNum);
+        Gdx.app.log("play_Count", String.valueOf(playNum));
+        preferences.putInteger(Constants.PLAY_COUNT,playNum).flush();
 
         if(playNum >= 50){
             game.getPlayGameServices().unlockAchievement();
@@ -432,6 +425,15 @@ public class PlayScreen extends InputAdapter implements Screen {
         stopped = false;
         gameOver = false;
         score.reset();
+
+        int playNum = preferences.getInteger(Constants.PLAY_COUNT);
+        playNum++;
+        Gdx.app.log("play_Count", String.valueOf(playNum));
+        preferences.putInteger(Constants.PLAY_COUNT,playNum).flush();
+
+        if(playNum >= 50){
+            game.getPlayGameServices().unlockAchievement();
+        }
 
     }
 

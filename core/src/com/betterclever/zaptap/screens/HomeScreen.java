@@ -207,6 +207,7 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         if(firstButton.isTouched(position)){
             game.getPlayGameServices().showAchievement();
+            game.getPlayGameServices().submitAllScores();
         }
 
         if(leaderBoard.isTouched(position)){

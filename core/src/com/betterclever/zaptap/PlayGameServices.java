@@ -12,5 +12,6 @@ public interface PlayGameServices {
     void submitScore(int highScore, int mode);
     void showAchievement();
     void showScore();
+    void submitAllScores();
     boolean isSignedIn();
 }
