@@ -11,6 +11,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.chartboost.sdk.Chartboost;
+import com.chartboost.sdk.Libraries.CBLogging;
+import com.google.ads.mediation.chartboost.ChartboostAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
@@ -19,16 +27,32 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.example.games.basegameutils.GameHelper;
 
-public class AndroidLauncher extends AndroidApplication implements PlayGameServices {
+public class AndroidLauncher extends AndroidApplication implements PlayGameServices, RewardedVideoAdListener {
 
     private static final String TAG = AndroidLauncher.class.getSimpleName();
     private GameHelper gameHelper;
     private final static int requestCode = 1;
     Preferences preferences;
 
+    private RewardedVideoAd mRewardedVideoAd;
+
+    private static String AD_UNIT_ID;
+    private static String APP_ID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AD_UNIT_ID = getString(R.string.adunit_id);
+        APP_ID = getString(R.string.app_id);
+        
+        MobileAds.initialize(this,APP_ID);
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        //loadRewardedVideoAd();
+        Chartboost.setLoggingLevel(CBLogging.Level.ALL);
+        Chartboost.onCreate(this);
+
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         initialize(new ZapTapGame(this), config);
 
@@ -52,6 +76,8 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
         gameHelper.setup(gameHelperListener);
         submitAllScores();
+
+        loadRewardedVideoAd();
 
     }
 
@@ -151,6 +177,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void submitScore(int highScore, int mode) {
+        showRewardedVideo();
         if (isSignedIn()) {
             String storedPlayerID = preferences.getString("playerid", "");
             String currentPlayerID = Games.Players.getCurrentPlayer(gameHelper.getApiClient()).getPlayerId();
@@ -335,4 +362,72 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         return gameHelper.isSignedIn();
     }
 
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        Log.i(TAG, "onRewardedVideoAdLoaded() called");
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+        Log.i(TAG, "onRewardedVideoAdOpened() called");
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+        Log.i(TAG, "onRewardedVideoStarted() called");
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        Log.i(TAG, "onRewardedVideoAdClosed() called");
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        Log.i(TAG, "onRewarded() called with: rewardItem = [" + rewardItem + "]");
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+        Log.i(TAG, "onRewardedVideoAdLeftApplication() called");
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+        Log.i(TAG, "onRewardedVideoAdFailedToLoad() called with: i = [" + i + "]");
+    }
+
+    private void loadRewardedVideoAd() {
+
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!mRewardedVideoAd.isLoaded()) {
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        mRewardedVideoAd.loadAd(AD_UNIT_ID, adRequest);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Gdx.app.log("MainActivity", "Ad me error aa gayi  " + e.getMessage() + ".");
+        }
+    }
+
+    private void showRewardedVideo() {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRewardedVideoAd.isLoaded()) {
+                        mRewardedVideoAd.show();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            Gdx.app.log("MainActivity","Ad Show karne me error" + e.getMessage());
+        }
+
+    }
 }
