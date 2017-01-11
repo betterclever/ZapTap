@@ -51,3 +51,5 @@
 -keep class com.google.ads.mediation.AdUrlAdapter {
     *;
 }
+
+-keep class com.chartboost.** { *; }

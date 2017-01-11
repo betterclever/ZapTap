@@ -11,10 +11,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.chartboost.sdk.CBLocation;
 import com.chartboost.sdk.Chartboost;
+import com.chartboost.sdk.ChartboostDelegate;
 import com.chartboost.sdk.Libraries.CBLogging;
+import com.chartboost.sdk.Model.CBError;
 import com.google.ads.mediation.chartboost.ChartboostAdapter;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
@@ -35,6 +40,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     Preferences preferences;
 
     private RewardedVideoAd mRewardedVideoAd;
+    private InterstitialAd mInterstitialAd;
 
     private static String AD_UNIT_ID;
     private static String APP_ID;
@@ -43,17 +49,75 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AD_UNIT_ID = getString(R.string.adunit_id);
+        AD_UNIT_ID = getString(R.string.interstitial_adunit_id);
         APP_ID = getString(R.string.app_id);
-        
-        MobileAds.initialize(this,APP_ID);
+
+
+        initializeInterstitialAd();
+
+        /*MobileAds.initialize(this,APP_ID);
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
-        //loadRewardedVideoAd();
+        loadRewardedVideoAd();
+        */
+
+/*
+
+        Chartboost.startWithAppId(this,
+                "5872144c04b0162f5c282128",
+                "08c47cd86486f719be690ebf0a6f4514eaa2eeba");
         Chartboost.setLoggingLevel(CBLogging.Level.ALL);
         Chartboost.onCreate(this);
+        Chartboost.setDelegate(new ChartboostDelegate() {
+
+
+            @Override
+            public void didCacheRewardedVideo(String location) {
+                super.didCacheRewardedVideo(location);
+            }
+
+            @Override
+            public void didFailToLoadRewardedVideo(String location, CBError.CBImpressionError error) {
+                super.didFailToLoadRewardedVideo(location, error);
+                Log.i(TAG, "didFailToLoadRewardedVideo() called with: location = [" + location + "], error = [" + error + "]");
+            }
+
+            @Override
+            public void didDismissRewardedVideo(String location) {
+                super.didDismissRewardedVideo(location);
+                Log.i(TAG, "didDismissRewardedVideo() called with: location = [" + location + "]");
+            }
+
+            @Override
+            public void didCloseRewardedVideo(String location) {
+                super.didCloseRewardedVideo(location);
+                Log.d(TAG, "didCloseRewardedVideo() called with: location = [" + location + "]");
+            }
+
+            @Override
+            public void didClickRewardedVideo(String location) {
+                super.didClickRewardedVideo(location);
+                Log.d(TAG, "didClickRewardedVideo() called with: location = [" + location + "]");
+            }
+
+            @Override
+            public void didCompleteRewardedVideo(String location, int reward) {
+                super.didCompleteRewardedVideo(location, reward);
+                Log.d(TAG, "didCompleteRewardedVideo() called with: location = [" + location + "], reward = [" + reward + "]");
+            }
+
+            @Override
+            public void didDisplayRewardedVideo(String location) {
+                super.didDisplayRewardedVideo(location);
+                Log.d(TAG, "didDisplayRewardedVideo() called with: location = [" + location + "]");
+            }
+        });
+
+        Chartboost.cacheRewardedVideo(CBLocation.LOCATION_DEFAULT);
+*/
 
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        config.useImmersiveMode = true;
         initialize(new ZapTapGame(this), config);
 
         gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
@@ -77,7 +141,56 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         gameHelper.setup(gameHelperListener);
         submitAllScores();
 
-        loadRewardedVideoAd();
+        //loadRewardedVideoAd();
+
+    }
+
+    private void initializeInterstitialAd() {
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                Log.i(TAG, "onAdClosed() called");
+
+                int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
+                count+=15;
+                preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
+                requestNewInterstitial();
+            }
+
+        });
+
+        requestNewInterstitial();
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("4B854EFE4E7BA74EDD3A7742E9F2191D")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
+    }
+
+    private void showInterstitialAd(){
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(mInterstitialAd.isLoaded()){
+                        mInterstitialAd.show();
+                    }
+                    else {
+                        requestNewInterstitial();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            Log.i(TAG,"Error ad me "+e.getMessage());
+        }
 
     }
 
@@ -115,12 +228,14 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     protected void onStart() {
         super.onStart();
         gameHelper.onStart(this);
+        Chartboost.onStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         gameHelper.onStop();
+        Chartboost.onStop(this);
     }
 
     @Override
@@ -177,7 +292,18 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void submitScore(int highScore, int mode) {
-        showRewardedVideo();
+        //showRewardedVideo();
+        //showInterstitialAd();
+/*
+        if(Chartboost.hasRewardedVideo(CBLocation.LOCATION_DEFAULT)){
+            Chartboost.showRewardedVideo(CBLocation.LOCATION_DEFAULT);
+        }
+        else {
+            Gdx.app.log("Video Not Available","Caching Now");
+            Chartboost.cacheRewardedVideo(CBLocation.LOCATION_DEFAULT);
+        }
+*/
+
         if (isSignedIn()) {
             String storedPlayerID = preferences.getString("playerid", "");
             String currentPlayerID = Games.Players.getCurrentPlayer(gameHelper.getApiClient()).getPlayerId();
@@ -323,6 +449,11 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         }
     }
 
+    @Override
+    public void showAd() {
+        showInterstitialAd();
+    }
+
 
     private String getStringByMode(int mode) {
         switch (mode) {
@@ -429,5 +560,31 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
             Gdx.app.log("MainActivity","Ad Show karne me error" + e.getMessage());
         }
 
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If an interstitial is on screen, close it.
+        if (Chartboost.onBackPressed())
+            return;
+        else
+            super.onBackPressed();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Chartboost.onDestroy(this);
     }
 }

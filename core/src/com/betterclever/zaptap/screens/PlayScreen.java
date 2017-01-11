@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.Encrypt;
 import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.CrossMeRing;
 import com.betterclever.zaptap.objects.ExplosionTriangle;
@@ -32,44 +33,48 @@ import com.betterclever.zaptap.objects.Score;
 
 public class PlayScreen extends InputAdapter implements Screen {
 
-    ExtendViewport extendViewport;
-    ShapeRenderer shapeRenderer;
-    SpriteBatch spriteBatch;
+    private ExtendViewport extendViewport;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch spriteBatch;
 
-    int sw = 1;
-    float time;
+    private int sw = 1;
+    private float time;
 
-    float timer;
+    private float timer;
 
     int radius;
 
-    DelayedRemovalArray<Ring> rings;
-    DelayedRemovalArray<ExplosionTriangle> explosionTriangles;
+    private DelayedRemovalArray<Ring> rings;
+    private DelayedRemovalArray<ExplosionTriangle> explosionTriangles;
 
-    PlayBall playBall;
+    private PlayBall playBall;
 
-    Ring lastAttachedRing;
-    ZapTapGame game;
-    Score score;
+    private Ring lastAttachedRing;
+    private ZapTapGame game;
+    private Score score;
 
-    boolean stopped = false;
-    boolean paused = false;
-    boolean gameOver = false;
+    private boolean stopped = false;
+    private boolean paused = false;
+    private boolean gameOver = false;
 
-    Color bannerColor;
+    private Color bannerColor;
 
-    BitmapFont font;
-    BitmapFont restartButtonFont;
-    BitmapFont goToHomeFont;
+    private BitmapFont font;
+    private BitmapFont restartButtonFont;
+    private BitmapFont goToHomeFont;
 
-    Texture pauseButton;
+    private Texture pauseButton;
+    private Texture zapperImage;
+    private Texture sadImage;
 
-    Rectangle bounds;
-    Rectangle pauseButtonBounds;
-    Rectangle goToHomeBounds;
+    private Rectangle bounds;
+    private Rectangle pauseButtonBounds;
+    private Rectangle goToHomeBounds;
+    private Rectangle continueZapperButtonBounds;
 
-    int playMode;
-    Preferences preferences;
+    private int chancesLeft;
+    private int playMode;
+    private Preferences preferences;
 
     public PlayScreen(int mode, ZapTapGame zapTapGame) {
         game = zapTapGame;
@@ -100,9 +105,12 @@ public class PlayScreen extends InputAdapter implements Screen {
         playBall = null;
 
         pauseButton = new Texture("pause.png");
+        zapperImage = new Texture("zapper.png");
+        sadImage = new Texture("sad.png");
 
         pauseButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,Constants.WORLD_HEIGHT-100,100,100);
         goToHomeBounds = new Rectangle(Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6-100,300,100);
+        continueZapperButtonBounds = new Rectangle();
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -116,8 +124,9 @@ public class PlayScreen extends InputAdapter implements Screen {
         restartButtonFont = generator.generateFont(parameter);
         generator.dispose();
 
-        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
+        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
         parameter.color = Color.WHITE;
+        parameter.size = 30;
         goToHomeFont = generator1.generateFont(parameter);
         generator1.dispose();
 
@@ -210,24 +219,51 @@ public class PlayScreen extends InputAdapter implements Screen {
             }
         }
 
-        if(!stopped){
-            drawPauseButton();
+
+        if(!stopped) drawPauseButton();
+
+        if(stopped) handleStoppedCase();
+
+    }
+
+    private void handleStoppedCase() {
+
+        drawBanner();
+        writeText("Go to Home",Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/8,goToHomeFont);
+
+        if(gameOver) {
+            handleGameOver();
         }
-
-        if(stopped){
-
-            drawBanner();
-            writeText("Go to Home",Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6,goToHomeFont);
-            if(gameOver) {
-                writeText("Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
-                drawButtonWithText("RESTART");
-            }
-            else if(paused) {
-                writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
-                drawButtonWithText("RESUME");
-            }
+        else if(paused) {
+            writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
+            drawButtonWithText("RESUME",0);
         }
+    }
 
+    private void handleGameOver() {
+        writeText("Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 100,font);
+
+        int zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
+        if(chancesLeft <= 0) {
+            writeText("No Chances Left",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2,goToHomeFont);
+            spriteBatch.begin();
+            spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 35, 40, 40);
+            spriteBatch.end();
+        }
+        else if(zapperCount < 150){
+            writeText("Not enough Zappers",Constants.WORLD_WIDTH/4.5f-50,Constants.WORLD_HEIGHT/2,goToHomeFont);
+            spriteBatch.begin();
+            spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 30, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
+            spriteBatch.end();
+        }
+        else {
+            writeText("Continue using 150 ", Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2, goToHomeFont);
+            continueZapperButtonBounds.set(Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2 - 50, 800, 100);
+            spriteBatch.begin();
+            spriteBatch.draw(zapperImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
+            spriteBatch.end();
+        }
+        drawButtonWithText("RESTART",-20);
     }
 
     private void drawPauseButton(){
@@ -236,17 +272,18 @@ public class PlayScreen extends InputAdapter implements Screen {
         spriteBatch.end();
     }
 
-    private void drawButtonWithText(String text) {
+    private void drawButtonWithText(String text, int displacementY) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
+        shapeRenderer.rect(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25+displacementY,200,50);
         shapeRenderer.end();
 
-        bounds.set(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25,200,50);
+        bounds.set(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25+displacementY,200,50);
 
         spriteBatch.begin();
-        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20);
+        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20 + displacementY);
         spriteBatch.end();
+
     }
 
     private void writeText(String text, float scrX, float scrY, BitmapFont font) {
@@ -261,7 +298,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(bannerColor);
-        shapeRenderer.rect(0,0,Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT/1.5f);
+        shapeRenderer.rect(0,0,Constants.WORLD_WIDTH,3*Constants.WORLD_HEIGHT/4);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -355,7 +392,7 @@ public class PlayScreen extends InputAdapter implements Screen {
     }
 
 
-    public void createExplosion(){
+    private void createExplosion(){
 
         int n = MathUtils.random(20,30);
         for(int k=0;k< n;k++){
@@ -392,29 +429,13 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     }
 
-    public void reset(int playMode){
+    private void reset(int playMode){
 
-        explosionTriangles.clear();
-        rings.clear();
-        time = 0;
-        timer = 0;
-        sw = 1;
         this.playMode = playMode;
-        playBall = null;
-        stopped = false;
-        gameOver = false;
-        score.reset();
-        int playNum = preferences.getInteger(Constants.PLAY_COUNT);
-        playNum++;
-        Gdx.app.log("play_Count", String.valueOf(playNum));
-        preferences.putInteger(Constants.PLAY_COUNT,playNum).flush();
-
-        if(playNum >= 50){
-            game.getPlayGameServices().unlockAchievement();
-        }
+        reset();
     }
 
-    public void reset(){
+    private void reset(){
 
         explosionTriangles.clear();
         rings.clear();
@@ -435,7 +456,10 @@ public class PlayScreen extends InputAdapter implements Screen {
             game.getPlayGameServices().unlockAchievement();
         }
 
+        chancesLeft = 2;
     }
+
+
 
     @Override
     public void dispose() {
@@ -450,6 +474,16 @@ public class PlayScreen extends InputAdapter implements Screen {
         super.touchDown(screenX, screenY, pointer, button);
 
         Vector2 touchPos = extendViewport.unproject(new Vector2(screenX,screenY));
+
+        if(gameOver){
+            int zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
+            if(zapperCount >= 150 && chancesLeft > 0) {
+                if (continueZapperButtonBounds.contains(touchPos)) {
+                    continueGameWithSameScore();
+                }
+            }
+        }
+
         if(!paused){
             if(pauseButtonBounds.contains(touchPos)){
                 pause();
@@ -480,6 +514,24 @@ public class PlayScreen extends InputAdapter implements Screen {
         }
 
         return true;
+    }
+
+    private void continueGameWithSameScore() {
+        explosionTriangles.clear();
+        rings.clear();
+        time = 0;
+        timer = 0;
+        sw = 1;
+        playBall = null;
+        stopped = false;
+        gameOver = false;
+
+        chancesLeft --;
+
+        int currentZapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
+        currentZapperCount -= 150;
+        preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(currentZapperCount)).flush();
+
     }
 
     public boolean keyDown (int keycode) {

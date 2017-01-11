@@ -13,5 +13,6 @@ public interface PlayGameServices {
     void showAchievement();
     void showScore();
     void submitAllScores();
+    void showAd();
     boolean isSignedIn();
 }

@@ -2,6 +2,7 @@ package com.betterclever.zaptap.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -13,7 +14,7 @@ import com.betterclever.zaptap.Constants;
 
 public class Score implements RenderableObject {
 
-    int score = 0;
+    private int score = 0;
     BitmapFont font;
     SpriteBatch batch;
 
@@ -23,6 +24,8 @@ public class Score implements RenderableObject {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 100;
         parameter.color= Color.WHITE;
+        parameter.minFilter = Texture.TextureFilter.Linear;
+        parameter.magFilter = Texture.TextureFilter.Linear;
         font = generator.generateFont(parameter); // font size 12 pixels
         generator.dispose();// don't forget to dispose to avoid memory leaks!
     }
@@ -31,6 +34,10 @@ public class Score implements RenderableObject {
         batch.begin();
         font.draw(batch,""+score,10,Constants.WORLD_HEIGHT-50);
         batch.end();
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public void increase(){

@@ -14,4 +14,5 @@ public class Constants {
     public static final int INSANE_MODE = 3;
     public static final String PREF_KEY = "ZapTapPrefs";
     public static final String PLAY_COUNT = "playcount";
+    public static final String ZAPPER_COUNT = "zappercount";
 }

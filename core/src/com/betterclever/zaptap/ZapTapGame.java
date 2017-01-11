@@ -25,10 +25,10 @@ public class ZapTapGame extends Game {
 	@Override
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("background-skyline.mp3"));
-		music.play();
+		/*music.play();
 		music.setLooping(true);
-		music.setVolume(1f);
-		homeScreen = new HomeScreen(this);
+		music.setVolume(0.5f);
+		*/homeScreen = new HomeScreen(this);
 		setScreen(homeScreen);
 		//setScreen(playScreen);
 	}
