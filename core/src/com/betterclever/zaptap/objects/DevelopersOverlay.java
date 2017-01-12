@@ -21,7 +21,6 @@ public class DevelopersOverlay implements RenderableObject {
     private SpriteBatch spriteBatch;
     private ShapeRenderer renderer;
     private BitmapFont font1, font2;
-    private Preferences preferences;
     private Color alphaBlack;
     private float fontX, fontY;
     private static final String DEVELOPERS = "Developers";

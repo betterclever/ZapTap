@@ -361,7 +361,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 }
                 float diff = r - playBall.getRotateRadius();
 
-               if(diff<7.5f && diff > -10){
+               if(diff<7.5f && diff > -15){
                     if(ring.getClass().equals(NormalRing.class)){
                         playBall.setAttachedRing((NormalRing) ring);
                         score.increase();
@@ -596,6 +596,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         if(keycode == Input.Keys.BACK){
             if(!stopped) {
                 pause();
+                return false;
             }
             if(stopped){
                 game.setHomeScreen();

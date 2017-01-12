@@ -41,8 +41,6 @@ public class HomeScreen extends InputAdapter implements Screen {
     private ExtendViewport viewport;
 
     private Ripple playRippleButton;
-    private Ripple testRipple;
-    private Ripple testRipple2;
 
     private DevelopersOverlay developersOverlay;
 
@@ -69,11 +67,14 @@ public class HomeScreen extends InputAdapter implements Screen {
     private Zappers zappers;
     private EarnZapperButton earnZapperButton;
 
+    private Preferences preferences;
+
     public HomeScreen(ZapTapGame zapTapGame) {
         game = zapTapGame;
     }
 
     boolean playTapped = false;
+    boolean hardLocked,mediumLocked,insaneLocked;
 
     @Override
     public void show() {
@@ -121,16 +122,42 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         developersOverlay = new DevelopersOverlay(renderer,batch,logoFont,otherFont);
 
-        buttons = new Button[4];
-        buttons[0] = new Button(renderer,10,10,180,60,"Easy",buttonFont,batch);
-        buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",buttonFont,batch);
-        buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",buttonFont,batch);
-        buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",buttonFont,batch);
-
-        Preferences preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
+        preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
         zappers = new Zappers(batch,renderer,preferences,
                 new Vector2(10,Constants.WORLD_HEIGHT-70));
         earnZapperButton = new EarnZapperButton(batch,renderer);
+
+        initModeLockStates();
+
+        buttons = new Button[4];
+        buttons[0] = new Button(renderer,10,10,180,60,"Easy",false,buttonFont,batch);
+        buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",mediumLocked,buttonFont,batch);
+        buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",hardLocked,buttonFont,batch);
+        buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",insaneLocked,buttonFont,batch);
+
+    }
+
+    private void initModeLockStates() {
+        if(preferences.getBoolean(Constants.MEDIUM_LOCKED,true)){
+            mediumLocked = true;
+            preferences.putBoolean(Constants.MEDIUM_LOCKED,true).flush();
+        }
+        else {
+            mediumLocked = false;
+        }
+        if(preferences.getBoolean(Constants.HARD_LOCKED,true)){
+            hardLocked = true;
+            preferences.putBoolean(Constants.HARD_LOCKED,true).flush();
+        }
+        else {
+            hardLocked = false;
+        }
+        if(preferences.getBoolean(Constants.INSANE_LOCKED,true)){
+            insaneLocked = true;
+            preferences.putBoolean(Constants.INSANE_LOCKED,true).flush();
+        }else {
+            insaneLocked = false;
+        }
     }
 
     @Override
@@ -165,7 +192,7 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         //developersOverlay.render(delta);
         zappers.render(delta);
-        earnZapperButton.render(delta);
+        //earnZapperButton.render(delta);
 
     }
 
@@ -227,12 +254,9 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         Vector2 position = viewport.unproject(new Vector2(screenX,screenY));
 
-        if(earnZapperButton.isTouched(position)){
-            game.getPlayGameServices().showAd();
-        }
-
         if(playRippleButton.isTouched(position)){
             playTapped = !playTapped;
+            initModeLockStates();
         }
 
         if(firstButton.isTouched(position)){

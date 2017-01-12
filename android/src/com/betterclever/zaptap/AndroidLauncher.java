@@ -1,7 +1,5 @@
 package com.betterclever.zaptap;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,9 +12,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
@@ -73,8 +69,6 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         gameHelper.setup(gameHelperListener);
         submitAllScores();
 
-        //loadRewardedVideoAd();
-
     }
 
     private void initializeInterstitialAd() {
@@ -85,16 +79,12 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                Log.i(TAG, "onAdClosed() called");
-
                 int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
                 count+=unclaimedZapperCount;
                 preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
                 requestNewInterstitial();
                 unclaimedZapperCount = 15;
-
             }
-
         });
 
         requestNewInterstitial();
@@ -117,6 +107,10 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                         mInterstitialAd.show();
                     }
                     else {
+                        int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
+                        count+=(unclaimedZapperCount/2);
+                        preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
+                        unclaimedZapperCount = 15;
                         requestNewInterstitial();
                     }
                 }
@@ -259,6 +253,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     private void unlockByCurrentScore(int score, int mode) {
         if (mode == Constants.EASY_MODE) {
             if (score >= 50) {
+                preferences.putBoolean(Constants.MEDIUM_LOCKED,false).flush();
+                Games.Achievements.unlock(gameHelper.getApiClient(),
+                        getString(R.string.achievement_unlock_medium_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_zap_ninja_level_1));
             }
@@ -272,6 +269,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
             }
         } else if (mode == Constants.MEDIUM_MODE) {
             if (score >= 50) {
+                preferences.putBoolean(Constants.HARD_LOCKED,false).flush();
+                Games.Achievements.unlock(gameHelper.getApiClient(),
+                        getString(R.string.achievement_unlock_hard_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_zap_ninja_level_2));
             }
@@ -285,6 +285,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
             }
         } else if (mode == Constants.HARD_MODE) {
             if (score >= 50) {
+                preferences.putBoolean(Constants.INSANE_LOCKED,false).flush();
+                Games.Achievements.unlock(gameHelper.getApiClient(),
+                        getString(R.string.achievement_unlock_insane_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_zap_ninja_level_3));
             }

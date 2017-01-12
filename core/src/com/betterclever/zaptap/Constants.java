@@ -15,4 +15,7 @@ public class Constants {
     public static final String PREF_KEY = "ZapTapPrefs";
     public static final String PLAY_COUNT = "playcount";
     public static final String ZAPPER_COUNT = "zappercount";
+    public static final String MEDIUM_LOCKED = "medium_lock";
+    public static final String HARD_LOCKED = "hard_lock";
+    public static final String INSANE_LOCKED = "insane_lock";
 }
