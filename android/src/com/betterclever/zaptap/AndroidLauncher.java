@@ -11,28 +11,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.chartboost.sdk.CBLocation;
-import com.chartboost.sdk.Chartboost;
-import com.chartboost.sdk.ChartboostDelegate;
-import com.chartboost.sdk.Libraries.CBLogging;
-import com.chartboost.sdk.Model.CBError;
-import com.google.ads.mediation.chartboost.ChartboostAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.example.games.basegameutils.GameHelper;
 
-public class AndroidLauncher extends AndroidApplication implements PlayGameServices, RewardedVideoAdListener {
+public class AndroidLauncher extends AndroidApplication implements PlayGameServices {
 
     private static final String TAG = AndroidLauncher.class.getSimpleName();
     private GameHelper gameHelper;
@@ -45,6 +37,8 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     private static String AD_UNIT_ID;
     private static String APP_ID;
 
+    int unclaimedZapperCount = 15;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,69 +46,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         AD_UNIT_ID = getString(R.string.interstitial_adunit_id);
         APP_ID = getString(R.string.app_id);
 
-
         initializeInterstitialAd();
-
-        /*MobileAds.initialize(this,APP_ID);
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.setRewardedVideoAdListener(this);
-        loadRewardedVideoAd();
-        */
-
-/*
-
-        Chartboost.startWithAppId(this,
-                "5872144c04b0162f5c282128",
-                "08c47cd86486f719be690ebf0a6f4514eaa2eeba");
-        Chartboost.setLoggingLevel(CBLogging.Level.ALL);
-        Chartboost.onCreate(this);
-        Chartboost.setDelegate(new ChartboostDelegate() {
-
-
-            @Override
-            public void didCacheRewardedVideo(String location) {
-                super.didCacheRewardedVideo(location);
-            }
-
-            @Override
-            public void didFailToLoadRewardedVideo(String location, CBError.CBImpressionError error) {
-                super.didFailToLoadRewardedVideo(location, error);
-                Log.i(TAG, "didFailToLoadRewardedVideo() called with: location = [" + location + "], error = [" + error + "]");
-            }
-
-            @Override
-            public void didDismissRewardedVideo(String location) {
-                super.didDismissRewardedVideo(location);
-                Log.i(TAG, "didDismissRewardedVideo() called with: location = [" + location + "]");
-            }
-
-            @Override
-            public void didCloseRewardedVideo(String location) {
-                super.didCloseRewardedVideo(location);
-                Log.d(TAG, "didCloseRewardedVideo() called with: location = [" + location + "]");
-            }
-
-            @Override
-            public void didClickRewardedVideo(String location) {
-                super.didClickRewardedVideo(location);
-                Log.d(TAG, "didClickRewardedVideo() called with: location = [" + location + "]");
-            }
-
-            @Override
-            public void didCompleteRewardedVideo(String location, int reward) {
-                super.didCompleteRewardedVideo(location, reward);
-                Log.d(TAG, "didCompleteRewardedVideo() called with: location = [" + location + "], reward = [" + reward + "]");
-            }
-
-            @Override
-            public void didDisplayRewardedVideo(String location) {
-                super.didDisplayRewardedVideo(location);
-                Log.d(TAG, "didDisplayRewardedVideo() called with: location = [" + location + "]");
-            }
-        });
-
-        Chartboost.cacheRewardedVideo(CBLocation.LOCATION_DEFAULT);
-*/
 
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useImmersiveMode = true;
@@ -156,9 +88,11 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                 Log.i(TAG, "onAdClosed() called");
 
                 int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
-                count+=15;
+                count+=unclaimedZapperCount;
                 preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
                 requestNewInterstitial();
+                unclaimedZapperCount = 15;
+
             }
 
         });
@@ -228,14 +162,12 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     protected void onStart() {
         super.onStart();
         gameHelper.onStart(this);
-        Chartboost.onStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         gameHelper.onStop();
-        Chartboost.onStop(this);
     }
 
     @Override
@@ -292,17 +224,6 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void submitScore(int highScore, int mode) {
-        //showRewardedVideo();
-        //showInterstitialAd();
-/*
-        if(Chartboost.hasRewardedVideo(CBLocation.LOCATION_DEFAULT)){
-            Chartboost.showRewardedVideo(CBLocation.LOCATION_DEFAULT);
-        }
-        else {
-            Gdx.app.log("Video Not Available","Caching Now");
-            Chartboost.cacheRewardedVideo(CBLocation.LOCATION_DEFAULT);
-        }
-*/
 
         if (isSignedIn()) {
             String storedPlayerID = preferences.getString("playerid", "");
@@ -454,6 +375,17 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         showInterstitialAd();
     }
 
+    @Override
+    public void endGame() {
+        finish();
+    }
+
+    @Override
+    public void claimTheZappers(int unclaimedZapperCount) {
+        this.unclaimedZapperCount = unclaimedZapperCount;
+        showInterstitialAd();
+    }
+
 
     private String getStringByMode(int mode) {
         switch (mode) {
@@ -494,76 +426,6 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     }
 
     @Override
-    public void onRewardedVideoAdLoaded() {
-        Log.i(TAG, "onRewardedVideoAdLoaded() called");
-    }
-
-    @Override
-    public void onRewardedVideoAdOpened() {
-        Log.i(TAG, "onRewardedVideoAdOpened() called");
-    }
-
-    @Override
-    public void onRewardedVideoStarted() {
-        Log.i(TAG, "onRewardedVideoStarted() called");
-    }
-
-    @Override
-    public void onRewardedVideoAdClosed() {
-        Log.i(TAG, "onRewardedVideoAdClosed() called");
-    }
-
-    @Override
-    public void onRewarded(RewardItem rewardItem) {
-        Log.i(TAG, "onRewarded() called with: rewardItem = [" + rewardItem + "]");
-    }
-
-    @Override
-    public void onRewardedVideoAdLeftApplication() {
-        Log.i(TAG, "onRewardedVideoAdLeftApplication() called");
-    }
-
-    @Override
-    public void onRewardedVideoAdFailedToLoad(int i) {
-        Log.i(TAG, "onRewardedVideoAdFailedToLoad() called with: i = [" + i + "]");
-    }
-
-    private void loadRewardedVideoAd() {
-
-        try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (!mRewardedVideoAd.isLoaded()) {
-                        AdRequest adRequest = new AdRequest.Builder().build();
-                        mRewardedVideoAd.loadAd(AD_UNIT_ID, adRequest);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Gdx.app.log("MainActivity", "Ad me error aa gayi  " + e.getMessage() + ".");
-        }
-    }
-
-    private void showRewardedVideo() {
-        try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mRewardedVideoAd.isLoaded()) {
-                        mRewardedVideoAd.show();
-                    }
-                }
-            });
-        }
-        catch (Exception e){
-            Gdx.app.log("MainActivity","Ad Show karne me error" + e.getMessage());
-        }
-
-    }
-
-
-    @Override
     public void onResume() {
         super.onResume();
     }
@@ -575,16 +437,11 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void onBackPressed() {
-        // If an interstitial is on screen, close it.
-        if (Chartboost.onBackPressed())
-            return;
-        else
-            super.onBackPressed();
+        super.onBackPressed();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Chartboost.onDestroy(this);
     }
 }

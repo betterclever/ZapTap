@@ -26,6 +26,9 @@ import com.betterclever.zaptap.objects.NormalRing;
 import com.betterclever.zaptap.objects.PlayBall;
 import com.betterclever.zaptap.objects.Ring;
 import com.betterclever.zaptap.objects.Score;
+import com.betterclever.zaptap.objects.Zappers;
+
+import org.w3c.dom.css.Rect;
 
 /**
  * Created by betterclever on 22/12/16.
@@ -66,11 +69,15 @@ public class PlayScreen extends InputAdapter implements Screen {
     private Texture pauseButton;
     private Texture zapperImage;
     private Texture sadImage;
+    private Texture restartImage;
 
     private Rectangle bounds;
     private Rectangle pauseButtonBounds;
     private Rectangle goToHomeBounds;
     private Rectangle continueZapperButtonBounds;
+    private Rectangle restartButtonBounds;
+
+    private Zappers zappers;
 
     private int chancesLeft;
     private int playMode;
@@ -99,6 +106,10 @@ public class PlayScreen extends InputAdapter implements Screen {
         timer = 0;
 
         preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
+        zappers = new Zappers(spriteBatch,shapeRenderer,preferences,
+                new Vector2(Constants.WORLD_WIDTH-150,Constants.WORLD_HEIGHT-70));
+
+        zappers.giveInitZappers();
 
         bannerColor = new Color(0,0,0,0.8f);
         score = new Score(spriteBatch);
@@ -107,10 +118,12 @@ public class PlayScreen extends InputAdapter implements Screen {
         pauseButton = new Texture("pause.png");
         zapperImage = new Texture("zapper.png");
         sadImage = new Texture("sad.png");
+        restartImage = new Texture("replay.png");
 
-        pauseButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,Constants.WORLD_HEIGHT-100,100,100);
+        pauseButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,0,100,100);
         goToHomeBounds = new Rectangle(Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6-100,300,100);
         continueZapperButtonBounds = new Rectangle();
+        restartButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,0,100,100);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -119,12 +132,12 @@ public class PlayScreen extends InputAdapter implements Screen {
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
         font = generator.generateFont(parameter);
-        parameter.size = 50;
-        parameter.color = Color.BLACK;
-        restartButtonFont = generator.generateFont(parameter);
         generator.dispose();
 
         FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
+        parameter.size = 30;
+        parameter.color = Color.BLACK;
+        restartButtonFont = generator1.generateFont(parameter);
         parameter.color = Color.WHITE;
         parameter.size = 30;
         goToHomeFont = generator1.generateFont(parameter);
@@ -219,6 +232,8 @@ public class PlayScreen extends InputAdapter implements Screen {
             }
         }
 
+        zappers.render(delta);
+
 
         if(!stopped) drawPauseButton();
 
@@ -229,14 +244,14 @@ public class PlayScreen extends InputAdapter implements Screen {
     private void handleStoppedCase() {
 
         drawBanner();
-        writeText("Go to Home",Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/8,goToHomeFont);
+        writeText("Go to Home",Constants.WORLD_WIDTH/2-130,Constants.WORLD_HEIGHT/8,goToHomeFont);
 
         if(gameOver) {
             handleGameOver();
         }
         else if(paused) {
             writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
-            drawButtonWithText("RESUME",0);
+            drawButtonWithText("    RESUME",0);
         }
     }
 
@@ -263,25 +278,41 @@ public class PlayScreen extends InputAdapter implements Screen {
             spriteBatch.draw(zapperImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
             spriteBatch.end();
         }
-        drawButtonWithText("RESTART",-20);
+        if(zappers.getPendingZappers() > 0) {
+            drawButtonWithText("Claim Zappers", -20);
+        }
+        else {
+            drawButtonWithText("    Claimed  ", -20);
+        }
+        drawRestartButton();
+    }
+
+    private void drawRestartButton() {
+        spriteBatch.begin();
+        spriteBatch.draw(restartImage,restartButtonBounds.x+10,restartButtonBounds.y+20,80,80);
+        spriteBatch.end();
     }
 
     private void drawPauseButton(){
         spriteBatch.begin();
-        spriteBatch.draw(pauseButton,Constants.WORLD_WIDTH-60,Constants.WORLD_HEIGHT-60,40,40);
+        spriteBatch.draw(pauseButton,Constants.WORLD_WIDTH-90,20,80,80);
         spriteBatch.end();
     }
 
     private void drawButtonWithText(String text, int displacementY) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25+displacementY,200,50);
+        shapeRenderer.rect(Constants.WORLD_WIDTH/2-155,
+                Constants.WORLD_HEIGHT/3-25+displacementY,
+                298,50);
         shapeRenderer.end();
 
-        bounds.set(Constants.WORLD_WIDTH/2-100,Constants.WORLD_HEIGHT/3-25+displacementY,200,50);
+        bounds.set(Constants.WORLD_WIDTH/2-155,Constants.WORLD_HEIGHT/3-25+displacementY,295,50);
 
         spriteBatch.begin();
-        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-80,Constants.WORLD_HEIGHT/3+20 + displacementY);
+        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-155,
+                Constants.WORLD_HEIGHT/3+15
+                + displacementY);
         spriteBatch.end();
 
     }
@@ -326,7 +357,6 @@ public class PlayScreen extends InputAdapter implements Screen {
                 float r = ring.radius;
 
                 if(playBall == null){
-                    Gdx.app.log("WTF","playball null");
                     return;
                 }
                 float diff = r - playBall.getRotateRadius();
@@ -335,6 +365,9 @@ public class PlayScreen extends InputAdapter implements Screen {
                     if(ring.getClass().equals(NormalRing.class)){
                         playBall.setAttachedRing((NormalRing) ring);
                         score.increase();
+                        if(score.getScore()%20 == 0 && score.getScore()>0){
+                            zappers.increasePendingZappers();
+                        }
                         break;
                     }
                     else {
@@ -445,7 +478,9 @@ public class PlayScreen extends InputAdapter implements Screen {
         playBall = null;
         stopped = false;
         gameOver = false;
+        zappers.resetPendingZappers();
         score.reset();
+        zappers.giveInitZappers();
 
         int playNum = preferences.getInteger(Constants.PLAY_COUNT);
         playNum++;
@@ -475,6 +510,13 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         Vector2 touchPos = extendViewport.unproject(new Vector2(screenX,screenY));
 
+        if(restartButtonBounds.contains(touchPos)){
+            if(gameOver){
+                reset();
+                return true;
+            }
+        }
+
         if(gameOver){
             int zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
             if(zapperCount >= 150 && chancesLeft > 0) {
@@ -498,7 +540,10 @@ public class PlayScreen extends InputAdapter implements Screen {
                     resume();
                 }
                 else if(gameOver) {
-                    reset();
+                    if(zappers.getPendingZappers()>0) {
+                        game.getPlayGameServices().claimTheZappers(zappers.getPendingZappers());
+                        zappers.resetPendingZappers();
+                    }
                 }
             }
             else if(goToHomeBounds.contains(touchPos)){
@@ -551,6 +596,9 @@ public class PlayScreen extends InputAdapter implements Screen {
         if(keycode == Input.Keys.BACK){
             if(!stopped) {
                 pause();
+            }
+            if(stopped){
+                game.setHomeScreen();
             }
         }
 

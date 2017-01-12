@@ -48,4 +48,8 @@ public class ZapTapGame extends Game {
 	public PlayGameServices getPlayGameServices() {
 		return playGameServices;
 	}
+
+    public void exit() {
+        playGameServices.endGame();
+    }
 }

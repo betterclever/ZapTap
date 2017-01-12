@@ -20,7 +20,7 @@ public class Score implements RenderableObject {
 
     public Score(SpriteBatch spriteBatch){
         batch = spriteBatch;
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Track.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 100;
         parameter.color= Color.WHITE;
@@ -32,7 +32,7 @@ public class Score implements RenderableObject {
 
     public void render(float delta){
         batch.begin();
-        font.draw(batch,""+score,10,Constants.WORLD_HEIGHT-50);
+        font.draw(batch,""+score,10,Constants.WORLD_HEIGHT-20);
         batch.end();
     }
 

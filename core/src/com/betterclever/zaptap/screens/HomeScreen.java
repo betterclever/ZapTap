@@ -1,6 +1,7 @@
 package com.betterclever.zaptap.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.ZapTapGame;
@@ -25,6 +27,8 @@ import com.betterclever.zaptap.objects.DevelopersOverlay;
 import com.betterclever.zaptap.objects.EarnZapperButton;
 import com.betterclever.zaptap.objects.Ripple;
 import com.betterclever.zaptap.objects.Zappers;
+
+import static com.badlogic.gdx.Gdx.input;
 
 /**
  * Created by betterclever on 05/01/17.
@@ -105,7 +109,9 @@ public class HomeScreen extends InputAdapter implements Screen {
         logoFont = generator.generateFont(parameter);
         generator.dispose();
 
-        Gdx.input.setInputProcessor(this);
+        input.setInputProcessor(this);
+        input.setCatchBackKey(true);
+
         FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
         parameter.size = 30;
         otherFont = generator2.generateFont(parameter);
@@ -122,7 +128,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",buttonFont,batch);
 
         Preferences preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
-        zappers = new Zappers(batch,renderer,preferences);
+        zappers = new Zappers(batch,renderer,preferences,
+                new Vector2(10,Constants.WORLD_HEIGHT-70));
         earnZapperButton = new EarnZapperButton(batch,renderer);
     }
 
@@ -155,7 +162,6 @@ public class HomeScreen extends InputAdapter implements Screen {
                 buttons[i].render(delta);
             }
         }
-
 
         //developersOverlay.render(delta);
         zappers.render(delta);
@@ -248,5 +254,14 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
 
         return value;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        boolean s =  super.keyDown(keycode);
+        if(keycode == Input.Keys.BACK){
+            game.exit();
+        }
+        return s;
     }
 }

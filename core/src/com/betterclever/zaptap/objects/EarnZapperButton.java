@@ -48,8 +48,8 @@ public class EarnZapperButton implements RenderableObject {
 
         spriteBatch.begin();
         spriteBatch.draw(getImage,position.x,position.y,50,50);
-        bitmapFont.draw(spriteBatch,"Earn Free",position.x+70,position.y+60);
-        bitmapFont.draw(spriteBatch,"Zappers",position.x+70,position.y+20);
+        bitmapFont.draw(spriteBatch,"Earn Free",position.x+80,position.y+50);
+        bitmapFont.draw(spriteBatch,"Zappers",position.x+80,position.y+20);
         spriteBatch.end();
     }
 

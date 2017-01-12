@@ -16,12 +16,13 @@ public class CrossMeRing extends Ring {
     int arcNum;
     float rot = 0;
     int speed;
+    Color ringColor;
 
     public CrossMeRing(ShapeRenderer renderer, int mode){
 
         this.renderer = renderer;
         radius = 200;
-
+        ringColor = Color.WHITE;
         setParamsByMode(mode);
     }
 
@@ -58,13 +59,13 @@ public class CrossMeRing extends Ring {
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        renderer.setColor(Color.WHITE);
+        renderer.setColor(ringColor);
         for (int i = 0; i < arcNum ; i++) {
             renderer.arc(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius, ( (180/arcNum * 2* i) + rot ),180/arcNum,256);
         }
 
         renderer.setColor(Color.BLACK);
-        renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius-5,256);
+        renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius-7.5f,256);
 
         renderer.end();
 

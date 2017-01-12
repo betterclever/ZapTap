@@ -14,5 +14,7 @@ public interface PlayGameServices {
     void showScore();
     void submitAllScores();
     void showAd();
+    void endGame();
+    void claimTheZappers(int unclaimedZapperCount);
     boolean isSignedIn();
 }

@@ -21,26 +21,31 @@ public class Zappers implements RenderableObject {
     private SpriteBatch spriteBatch;
     private ShapeRenderer renderer;
     private BitmapFont bitmapFont;
+    private BitmapFont pendingZapperFont;
     private Texture zapperImage;
     private Vector2 position;
     private int zapperCount;
     private Preferences preferences;
+    private int pendingZappers;
 
     float timePassed;
 
-    public Zappers(SpriteBatch spriteBatch, ShapeRenderer renderer, Preferences preferences) {
+    public Zappers(SpriteBatch spriteBatch, ShapeRenderer renderer, Preferences preferences, Vector2 position) {
         this.spriteBatch = spriteBatch;
         this.renderer = renderer;
         this.preferences = preferences;
-
-        position = new Vector2(10,Constants.WORLD_HEIGHT-70);
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
+        this.position = position;
+        pendingZappers = 0;
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Track.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 50;
+        parameter.size = 45;
         parameter.color= Color.WHITE;
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
         bitmapFont = generator.generateFont(parameter);
+        parameter.size = 30;
+        parameter.color = new Color(0.9f,0.9f,0.9f,1);
+        pendingZapperFont = generator.generateFont(parameter);
         zapperImage = new Texture("zapper.png");
         zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
     }
@@ -57,16 +62,31 @@ public class Zappers implements RenderableObject {
 
         spriteBatch.begin();
         spriteBatch.draw(zapperImage,position.x,position.y,50,50);
-        bitmapFont.draw(spriteBatch,String.valueOf(zapperCount),position.x+50,position.y+40);
+        bitmapFont.draw(spriteBatch,String.valueOf(zapperCount),position.x+50,position.y+50);
+        if(pendingZappers > 0) {
+            pendingZapperFont.draw(spriteBatch, "+ " + pendingZappers, position.x + 50, position.y + 5);
+        }
         spriteBatch.end();
-
 
     }
 
-    public void updateZapperCount(){
+    private void updateZapperCount(){
         zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
     }
 
+    public void increasePendingZappers(){
+        pendingZappers += 15;
+    }
 
+    public void giveInitZappers(){
+        pendingZappers += 5;
+    }
 
+    public void resetPendingZappers(){
+        pendingZappers = 0;
+    }
+
+    public int getPendingZappers() {
+        return pendingZappers;
+    }
 }
