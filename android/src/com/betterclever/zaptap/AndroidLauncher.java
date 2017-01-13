@@ -251,6 +251,12 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
     }
 
     private void unlockByCurrentScore(int score, int mode) {
+
+        if(Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT)) >= 2000){
+            Games.Achievements.unlock(gameHelper.getApiClient(),
+                    getString(R.string.achievement_zapper_collector));
+        }
+
         if (mode == Constants.EASY_MODE) {
             if (score >= 50) {
                 preferences.putBoolean(Constants.MEDIUM_LOCKED,false).flush();

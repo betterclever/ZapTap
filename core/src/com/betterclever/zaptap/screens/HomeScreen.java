@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,16 +15,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.FontsUtilty;
 import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.Button;
 import com.betterclever.zaptap.objects.CircleButton;
 import com.betterclever.zaptap.objects.DevelopersOverlay;
 import com.betterclever.zaptap.objects.EarnZapperButton;
 import com.betterclever.zaptap.objects.Ripple;
+import com.betterclever.zaptap.objects.SoundOnOffButton;
 import com.betterclever.zaptap.objects.Zappers;
 
 import static com.badlogic.gdx.Gdx.input;
@@ -66,6 +65,7 @@ public class HomeScreen extends InputAdapter implements Screen {
     private Button[] buttons;
     private Zappers zappers;
     private EarnZapperButton earnZapperButton;
+    private SoundOnOffButton soundOnOffButton;
 
     private Preferences preferences;
 
@@ -127,6 +127,9 @@ public class HomeScreen extends InputAdapter implements Screen {
                 new Vector2(10,Constants.WORLD_HEIGHT-70));
         earnZapperButton = new EarnZapperButton(batch,renderer);
 
+
+        soundOnOffButton = new SoundOnOffButton(batch,preferences);
+
         initModeLockStates();
 
         buttons = new Button[4];
@@ -178,6 +181,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         chameleonizeTheBackground(delta);
         writeLogo();
 
+        soundOnOffButton.render(delta);
+
         batch.begin();
         batch.draw(scoreTrophy,3*Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
         batch.draw(achievementMedal,Constants.WORLD_WIDTH/4-30,Constants.WORLD_HEIGHT/4+10,60,60);
@@ -198,7 +203,7 @@ public class HomeScreen extends InputAdapter implements Screen {
 
     private void writeLogo() {
         batch.begin();
-        logoFont.draw(batch,"Zap Tap",Constants.WORLD_WIDTH/4,5*Constants.WORLD_HEIGHT/7);
+        FontsUtilty.HOMESCREEN_LOGO_FONT.draw(batch,"Zap Tap",Constants.WORLD_WIDTH/4,5*Constants.WORLD_HEIGHT/7);
         if(playTapped) {
             otherFont.draw(batch, "MODE", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
         }
@@ -257,6 +262,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         if(playRippleButton.isTouched(position)){
             playTapped = !playTapped;
             initModeLockStates();
+        }
+
+        if(soundOnOffButton.isTouched(position)){
+            soundOnOffButton.toggle();
         }
 
         if(firstButton.isTouched(position)){

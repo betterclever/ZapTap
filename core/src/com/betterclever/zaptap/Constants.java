@@ -1,5 +1,12 @@
 package com.betterclever.zaptap;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
 /**
  * Created by betterclever on 22/12/16.
  */
@@ -18,4 +25,7 @@ public class Constants {
     public static final String MEDIUM_LOCKED = "medium_lock";
     public static final String HARD_LOCKED = "hard_lock";
     public static final String INSANE_LOCKED = "insane_lock";
+    public static final String SOUND_ON = "sound_on";
+    public static final Music MUSIC = Gdx.audio.newMusic(Gdx.files.internal("background-skyline.mp3"));
+
 }
