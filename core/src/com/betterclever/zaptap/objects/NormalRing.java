@@ -3,8 +3,7 @@ package com.betterclever.zaptap.objects;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.objects.Ring;
+import com.betterclever.zaptap.utility.Constants;
 
 /**
  * Created by betterclever on 22/12/16.

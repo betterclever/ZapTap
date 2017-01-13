@@ -1,7 +1,6 @@
 package com.betterclever.zaptap.objects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,8 +9,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.Encrypt;
+import com.betterclever.zaptap.utility.Constants;
 
 /**
  * Created by betterclever on 11/01/17.

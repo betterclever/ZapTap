@@ -1,17 +1,13 @@
 package com.betterclever.zaptap.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.Encrypt;
-import com.betterclever.zaptap.FontsUtilty;
+import com.betterclever.zaptap.utility.Constants;
+import com.betterclever.zaptap.utility.Encrypt;
+import com.betterclever.zaptap.utility.FontsUtilty;
 
 /**
  * Created by betterclever on 10/01/17.
@@ -64,11 +60,11 @@ public class Zappers implements RenderableObject {
     }
 
     public void increasePendingZappers(){
-        pendingZappers += 15;
+        pendingZappers += 10;
     }
 
     public void giveInitZappers(){
-        pendingZappers += 5;
+        pendingZappers += 3;
     }
 
     public void resetPendingZappers(){

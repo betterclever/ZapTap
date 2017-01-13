@@ -10,16 +10,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.Encrypt;
-import com.betterclever.zaptap.FontsUtilty;
+import com.betterclever.zaptap.utility.Constants;
+import com.betterclever.zaptap.utility.Encrypt;
+import com.betterclever.zaptap.utility.FontsUtilty;
 import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.CrossMeRing;
 import com.betterclever.zaptap.objects.ExplosionTriangle;
@@ -28,8 +27,6 @@ import com.betterclever.zaptap.objects.PlayBall;
 import com.betterclever.zaptap.objects.Ring;
 import com.betterclever.zaptap.objects.Score;
 import com.betterclever.zaptap.objects.Zappers;
-
-import org.w3c.dom.css.Rect;
 
 /**
  * Created by betterclever on 22/12/16.
@@ -410,7 +407,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             ExplosionTriangle explosionTriangle = new ExplosionTriangle(shapeRenderer,playBall.getPosition(), k*360/n );
             explosionTriangles.add(explosionTriangle);
         }
-        game.getPlayGameServices().submitScore(score.getScore(),playMode);
+        game.getPlatformHelper().submitScore(score.getScore(),playMode);
         Gdx.input.vibrate(500);
 
     }
@@ -466,7 +463,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         preferences.putInteger(Constants.PLAY_COUNT,playNum).flush();
 
         if(playNum >= 50){
-            game.getPlayGameServices().unlockAchievement();
+            game.getPlatformHelper().unlockAchievement();
         }
 
         chancesLeft = 2;
@@ -517,7 +514,7 @@ public class PlayScreen extends InputAdapter implements Screen {
                 }
                 else if(gameOver) {
                     if(zappers.getPendingZappers()>0) {
-                        game.getPlayGameServices().claimTheZappers(zappers.getPendingZappers());
+                        game.getPlatformHelper().claimTheZappers(zappers.getPendingZappers());
                         zappers.resetPendingZappers();
                     }
                 }

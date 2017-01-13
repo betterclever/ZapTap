@@ -1,4 +1,4 @@
-package com.betterclever.zaptap;
+package com.betterclever.zaptap.utility;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -27,5 +27,9 @@ public class Constants {
     public static final String INSANE_LOCKED = "insane_lock";
     public static final String SOUND_ON = "sound_on";
     public static final Music MUSIC = Gdx.audio.newMusic(Gdx.files.internal("background-skyline.mp3"));
-
+    public static final Texture COPYRIGHT_IMAGE = new Texture("copyright.png");
+    public static final Texture FACEBOOK_IMAGE = new Texture("facebook.png");
+    public static final Texture GOOGLEPLUS_IMAGE = new Texture("google-plus.png");
+    public static final Texture GITHUB_IMAGE = new Texture("github-logo.png");
+    public static final Texture CLOSE_IMAGE = new Texture("cancel.png");
 }

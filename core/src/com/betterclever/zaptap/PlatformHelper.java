@@ -4,7 +4,7 @@ package com.betterclever.zaptap;
  * Created by betterclever on 06/01/17.
  */
 
-public interface PlayGameServices {
+public interface PlatformHelper {
     void signIn();
     void signOut();
     void rateGame();

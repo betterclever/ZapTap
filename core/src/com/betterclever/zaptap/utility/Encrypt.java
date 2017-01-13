@@ -1,4 +1,4 @@
-package com.betterclever.zaptap;
+package com.betterclever.zaptap.utility;
 
 import com.badlogic.gdx.utils.Base64Coder;
 

@@ -20,7 +20,7 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.example.games.basegameutils.GameHelper;
 
-public class AndroidLauncher extends AndroidApplication implements PlayGameServices {
+public class AndroidLauncher extends AndroidApplication implements PlatformHelper {
 
     private static final String TAG = AndroidLauncher.class.getSimpleName();
     private GameHelper gameHelper;
@@ -51,7 +51,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
         gameHelper.enableDebugLog(false);
 
-        preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
+        preferences = Gdx.app.getPreferences(com.betterclever.zaptap.utility.Constants.PREF_KEY);
 
         GameHelper.GameHelperListener gameHelperListener = new GameHelper.GameHelperListener() {
             @Override
@@ -79,9 +79,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
-                count+=unclaimedZapperCount;
-                preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
+                int count = com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT));
+                count+=unclaimedZapperCount*2;
+                preferences.putString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT, com.betterclever.zaptap.utility.Encrypt.encrypt(count)).flush();
                 requestNewInterstitial();
                 unclaimedZapperCount = 15;
             }
@@ -107,9 +107,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                         mInterstitialAd.show();
                     }
                     else {
-                        int count = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
-                        count+=(unclaimedZapperCount/2);
-                        preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(count)).flush();
+                        int count = com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT));
+                        count+=(unclaimedZapperCount);
+                        preferences.putString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT, com.betterclever.zaptap.utility.Encrypt.encrypt(count)).flush();
                         unclaimedZapperCount = 15;
                         requestNewInterstitial();
                     }
@@ -206,7 +206,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void unlockAchievement() {
-        int playCount = preferences.getInteger(Constants.PLAY_COUNT);
+        int playCount = preferences.getInteger(com.betterclever.zaptap.utility.Constants.PLAY_COUNT);
         if (playCount >= 50) {
             Games.Achievements.unlock(gameHelper.getApiClient(),
                     getString(R.string.achievement_addicted));
@@ -252,14 +252,14 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     private void unlockByCurrentScore(int score, int mode) {
 
-        if(Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT)) >= 2000){
+        if(com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT)) >= 2000){
             Games.Achievements.unlock(gameHelper.getApiClient(),
                     getString(R.string.achievement_zapper_collector));
         }
 
-        if (mode == Constants.EASY_MODE) {
+        if (mode == com.betterclever.zaptap.utility.Constants.EASY_MODE) {
             if (score >= 50) {
-                preferences.putBoolean(Constants.MEDIUM_LOCKED,false).flush();
+                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.MEDIUM_LOCKED,false).flush();
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unlock_medium_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
@@ -273,9 +273,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unstoppable_zapper_level_1));
             }
-        } else if (mode == Constants.MEDIUM_MODE) {
+        } else if (mode == com.betterclever.zaptap.utility.Constants.MEDIUM_MODE) {
             if (score >= 50) {
-                preferences.putBoolean(Constants.HARD_LOCKED,false).flush();
+                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.HARD_LOCKED,false).flush();
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unlock_hard_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
@@ -289,9 +289,9 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unstoppable_zapper_level_2));
             }
-        } else if (mode == Constants.HARD_MODE) {
+        } else if (mode == com.betterclever.zaptap.utility.Constants.HARD_MODE) {
             if (score >= 50) {
-                preferences.putBoolean(Constants.INSANE_LOCKED,false).flush();
+                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.INSANE_LOCKED,false).flush();
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unlock_insane_mode));
                 Games.Achievements.unlock(gameHelper.getApiClient(),
@@ -305,7 +305,7 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_unstoppable_zapper_level_3));
             }
-        } else if (mode == Constants.INSANE_MODE) {
+        } else if (mode == com.betterclever.zaptap.utility.Constants.INSANE_MODE) {
             if (score >= 50) {
                 Games.Achievements.unlock(gameHelper.getApiClient(),
                         getString(R.string.achievement_ultimate_zap_ninja));
@@ -386,7 +386,8 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     @Override
     public void endGame() {
-        finish();
+        finishAffinity();
+        System.exit(0);
     }
 
     @Override
@@ -398,13 +399,13 @@ public class AndroidLauncher extends AndroidApplication implements PlayGameServi
 
     private String getStringByMode(int mode) {
         switch (mode) {
-            case Constants.EASY_MODE:
+            case com.betterclever.zaptap.utility.Constants.EASY_MODE:
                 return getString(R.string.leaderboard_easy_highscore);
-            case Constants.MEDIUM_MODE:
+            case com.betterclever.zaptap.utility.Constants.MEDIUM_MODE:
                 return getString(R.string.leaderboard_medium_highscore);
-            case Constants.HARD_MODE:
+            case com.betterclever.zaptap.utility.Constants.HARD_MODE:
                 return getString(R.string.leaderboard_hard_highscore);
-            case Constants.INSANE_MODE:
+            case com.betterclever.zaptap.utility.Constants.INSANE_MODE:
                 return getString(R.string.leaderboard_insane_highscore);
             default:
                 return getString(R.string.leaderboard_easy_highscore);

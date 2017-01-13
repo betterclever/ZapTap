@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
-import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.utility.Constants;
 
 /**
  * Created by betterclever on 22/12/16.

@@ -1,16 +1,13 @@
 package com.betterclever.zaptap.objects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.betterclever.zaptap.Constants;
+import com.betterclever.zaptap.utility.Constants;
+import com.betterclever.zaptap.utility.FontsUtilty;
 
 /**
  * Created by betterclever on 10/01/17.
@@ -22,16 +19,16 @@ public class DevelopersOverlay implements RenderableObject {
     private ShapeRenderer renderer;
     private Color alphaBlack;
     private float fontX, fontY;
-    private static final String DEVELOPERS = "Developers";
-    private static final String DEV_NAME = "betterclever";
+    private static final String DEVELOPERS = "Developed By";
+    private static final String DEV_NAME = "Pranjal Paliwal";
 
     public DevelopersOverlay(ShapeRenderer renderer, SpriteBatch batch){
         spriteBatch = batch;
         this.renderer = renderer;
         alphaBlack = new Color(0,0,0,0.8f);
-        //GlyphLayout layout = new GlyphLayout(font1,DEVELOPERS);
-        //fontX = 0 + (Constants.WORLD_WIDTH - layout.width)/2;
-        //fontY = Constants.WORLD_HEIGHT/4 + (Constants.WORLD_HEIGHT + layout.height)/2;
+        GlyphLayout layout = new GlyphLayout(FontsUtilty.DEVELOPERS_SCREEN_FONT,DEVELOPERS);
+        fontX = 0 + (Constants.WORLD_WIDTH - layout.width)/2;
+        fontY = Constants.WORLD_HEIGHT/4f + (Constants.WORLD_HEIGHT + layout.height)/2;
 
     }
 
@@ -49,8 +46,15 @@ public class DevelopersOverlay implements RenderableObject {
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         spriteBatch.begin();
-        //font1.draw(spriteBatch,DEVELOPERS,fontX,fontY);
-        //font2.draw(spriteBatch,DEV_NAME,fontX + 250,fontY-150);
+        FontsUtilty.DEVELOPERS_SCREEN_FONT.draw(spriteBatch,DEVELOPERS,fontX,fontY);
+        FontsUtilty.GO_TO_HOME_FONT.draw(spriteBatch,DEV_NAME,140,fontY-140);
+        FontsUtilty.MODE_BUTTON_FONT.draw(spriteBatch,"(@betterclever)",170,fontY-190);
+        spriteBatch.draw(Constants.COPYRIGHT_IMAGE,Constants.WORLD_WIDTH/2-130,20,20,20);
+        FontsUtilty.COPYRIGHT_FONT.draw(spriteBatch," CLEVERCORE LABS - 2017",Constants.WORLD_WIDTH/2-110,38);
+        spriteBatch.draw(Constants.FACEBOOK_IMAGE,Constants.WORLD_WIDTH/2 + 90,Constants.WORLD_HEIGHT/2 - 65,50,50);
+        spriteBatch.draw(Constants.GITHUB_IMAGE,Constants.WORLD_WIDTH/2 + 150,Constants.WORLD_HEIGHT/2 - 65,50,50);
+        spriteBatch.draw(Constants.GOOGLEPLUS_IMAGE,Constants.WORLD_WIDTH/2 + 210,Constants.WORLD_HEIGHT/2 - 65,50,50);
+        spriteBatch.draw(Constants.CLOSE_IMAGE,Constants.WORLD_WIDTH-60,Constants.WORLD_HEIGHT-60,40,40);
         spriteBatch.end();
     }
 }

@@ -8,16 +8,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.FontsUtilty;
+import com.betterclever.zaptap.objects.TutorialOverlay;
+import com.betterclever.zaptap.utility.Constants;
+import com.betterclever.zaptap.utility.FontsUtilty;
 import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.Button;
 import com.betterclever.zaptap.objects.CircleButton;
@@ -26,8 +25,6 @@ import com.betterclever.zaptap.objects.EarnZapperButton;
 import com.betterclever.zaptap.objects.Ripple;
 import com.betterclever.zaptap.objects.SoundOnOffButton;
 import com.betterclever.zaptap.objects.Zappers;
-
-import static com.badlogic.gdx.Gdx.input;
 
 /**
  * Created by betterclever on 05/01/17.
@@ -42,6 +39,7 @@ public class HomeScreen extends InputAdapter implements Screen {
     private Ripple playRippleButton;
 
     private DevelopersOverlay developersOverlay;
+    private TutorialOverlay tutorialOverlay;
 
     private Color backgroundColor;
     private Color destColor;
@@ -101,6 +99,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         viewport = new ExtendViewport(Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT);
 
         developersOverlay = new DevelopersOverlay(renderer,batch);
+        tutorialOverlay = new TutorialOverlay(batch,renderer);
 
         preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
         zappers = new Zappers(batch,renderer,preferences,
@@ -179,9 +178,10 @@ public class HomeScreen extends InputAdapter implements Screen {
             }
         }
 
-        //developersOverlay.render(delta);
         zappers.render(delta);
+        //developersOverlay.render(delta);
         //earnZapperButton.render(delta);
+        tutorialOverlay.render(delta);
 
     }
 
@@ -253,12 +253,12 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
 
         if(firstButton.isTouched(position)){
-            game.getPlayGameServices().showAchievement();
-            game.getPlayGameServices().submitAllScores();
+            game.getPlatformHelper().showAchievement();
+            game.getPlatformHelper().submitAllScores();
         }
 
         if(leaderBoard.isTouched(position)){
-            game.getPlayGameServices().showScore();
+            game.getPlatformHelper().showScore();
         }
 
         if(playTapped){

@@ -1,13 +1,8 @@
 package com.betterclever.zaptap.objects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.betterclever.zaptap.Constants;
-import com.betterclever.zaptap.FontsUtilty;
+import com.betterclever.zaptap.utility.Constants;
+import com.betterclever.zaptap.utility.FontsUtilty;
 
 /**
  * Created by betterclever on 01/01/17.

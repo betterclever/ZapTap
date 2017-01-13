@@ -1,4 +1,4 @@
-package com.betterclever.zaptap;
+package com.betterclever.zaptap.utility;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -22,6 +22,7 @@ public class FontsUtilty {
     public static BitmapFont MODE_BUTTON_FONT;
     public static BitmapFont GO_TO_HOME_FONT;
     public static BitmapFont RESUME_BUTTON_FONT;
+    public static BitmapFont COPYRIGHT_FONT;
 
     static {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -36,7 +37,7 @@ public class FontsUtilty {
         generator.dispose();
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
-        parameter.size = 30;
+        parameter.size = 50;
         DEVELOPERS_SCREEN_FONT = generator.generateFont(parameter);
         parameter.size = 30;
         PLAY_BUTTON_FONT = generator.generateFont(parameter);
@@ -46,6 +47,8 @@ public class FontsUtilty {
         parameter.size = 20;
         parameter.color = Color.WHITE;
         MODE_BUTTON_FONT = generator.generateFont(parameter);
+        parameter.size = 15;
+        COPYRIGHT_FONT = generator.generateFont(parameter);
         parameter.size = 30;
         parameter.color = new Color(0.9f,0.9f,0.9f,1);
         GO_TO_HOME_FONT = generator.generateFont(parameter);

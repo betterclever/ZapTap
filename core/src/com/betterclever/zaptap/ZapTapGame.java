@@ -1,7 +1,6 @@
 package com.betterclever.zaptap;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.betterclever.zaptap.screens.HomeScreen;
 import com.betterclever.zaptap.screens.PlayScreen;
@@ -11,22 +10,22 @@ public class ZapTapGame extends Game {
 	PlayScreen playScreen;
 	Music music ;
 
-	PlayGameServices playGameServices;
+	PlatformHelper platformHelper;
 	HomeScreen homeScreen;
 
-	public ZapTapGame(PlayGameServices playGameServices) {
-		this.playGameServices = playGameServices;
+	public ZapTapGame(PlatformHelper platformHelper) {
+		this.platformHelper = platformHelper;
 	}
 
 	public ZapTapGame(){
-        playGameServices = null;
+        platformHelper = null;
     }
 
 	@Override
 	public void create() {
-		music = Constants.MUSIC;
+		music = com.betterclever.zaptap.utility.Constants.MUSIC;
 		music.setLooping(true);
-		music.setVolume(0.5f);
+		music.setVolume(1f);
 		homeScreen = new HomeScreen(this);
 		setScreen(homeScreen);
 		//setScreen(playScreen);
@@ -44,11 +43,11 @@ public class ZapTapGame extends Game {
 		setScreen(homeScreen);
 	}
 
-	public PlayGameServices getPlayGameServices() {
-		return playGameServices;
+	public PlatformHelper getPlatformHelper() {
+		return platformHelper;
 	}
 
     public void exit() {
-        playGameServices.endGame();
+        platformHelper.endGame();
     }
 }
