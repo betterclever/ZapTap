@@ -20,21 +20,18 @@ public class DevelopersOverlay implements RenderableObject {
 
     private SpriteBatch spriteBatch;
     private ShapeRenderer renderer;
-    private BitmapFont font1, font2;
     private Color alphaBlack;
     private float fontX, fontY;
     private static final String DEVELOPERS = "Developers";
     private static final String DEV_NAME = "betterclever";
 
-    public DevelopersOverlay(ShapeRenderer renderer, SpriteBatch batch, BitmapFont font1, BitmapFont font2){
+    public DevelopersOverlay(ShapeRenderer renderer, SpriteBatch batch){
         spriteBatch = batch;
         this.renderer = renderer;
         alphaBlack = new Color(0,0,0,0.8f);
-        this.font1 = font1;
-        this.font2 = font2;
-        GlyphLayout layout = new GlyphLayout(font1,DEVELOPERS);
-        fontX = 0 + (Constants.WORLD_WIDTH - layout.width)/2;
-        fontY = Constants.WORLD_HEIGHT/4 + (Constants.WORLD_HEIGHT + layout.height)/2;
+        //GlyphLayout layout = new GlyphLayout(font1,DEVELOPERS);
+        //fontX = 0 + (Constants.WORLD_WIDTH - layout.width)/2;
+        //fontY = Constants.WORLD_HEIGHT/4 + (Constants.WORLD_HEIGHT + layout.height)/2;
 
     }
 
@@ -52,8 +49,8 @@ public class DevelopersOverlay implements RenderableObject {
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         spriteBatch.begin();
-        font1.draw(spriteBatch,DEVELOPERS,fontX,fontY);
-        font2.draw(spriteBatch,DEV_NAME,fontX + 250,fontY-150);
+        //font1.draw(spriteBatch,DEVELOPERS,fontX,fontY);
+        //font2.draw(spriteBatch,DEV_NAME,fontX + 250,fontY-150);
         spriteBatch.end();
     }
 }

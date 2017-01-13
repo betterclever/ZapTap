@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.Encrypt;
+import com.betterclever.zaptap.FontsUtilty;
 
 /**
  * Created by betterclever on 10/01/17.
@@ -20,8 +21,6 @@ public class Zappers implements RenderableObject {
 
     private SpriteBatch spriteBatch;
     private ShapeRenderer renderer;
-    private BitmapFont bitmapFont;
-    private BitmapFont pendingZapperFont;
     private Texture zapperImage;
     private Vector2 position;
     private int zapperCount;
@@ -36,16 +35,6 @@ public class Zappers implements RenderableObject {
         this.preferences = preferences;
         this.position = position;
         pendingZappers = 0;
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Track.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 45;
-        parameter.color= Color.WHITE;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        bitmapFont = generator.generateFont(parameter);
-        parameter.size = 30;
-        parameter.color = new Color(0.9f,0.9f,0.9f,1);
-        pendingZapperFont = generator.generateFont(parameter);
         zapperImage = new Texture("zapper.png");
         zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
     }
@@ -62,9 +51,9 @@ public class Zappers implements RenderableObject {
 
         spriteBatch.begin();
         spriteBatch.draw(zapperImage,position.x,position.y,50,50);
-        bitmapFont.draw(spriteBatch,String.valueOf(zapperCount),position.x+50,position.y+50);
+        FontsUtilty.ZAPPER_FONT.draw(spriteBatch,String.valueOf(zapperCount),position.x+50,position.y+50);
         if(pendingZappers > 0) {
-            pendingZapperFont.draw(spriteBatch, "+ " + pendingZappers, position.x + 50, position.y + 5);
+            FontsUtilty.PENDING_ZAPPER_FONT.draw(spriteBatch, "+ " + pendingZappers, position.x + 50, position.y + 5);
         }
         spriteBatch.end();
 

@@ -58,10 +58,6 @@ public class HomeScreen extends InputAdapter implements Screen {
     private CircleButton leaderBoard;
     private CircleButton firstButton;
 
-    private BitmapFont logoFont;
-    private BitmapFont otherFont;
-    private BitmapFont buttonFont;
-
     private Button[] buttons;
     private Zappers zappers;
     private EarnZapperButton earnZapperButton;
@@ -78,6 +74,9 @@ public class HomeScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
+
+        Gdx.input.setInputProcessor(this);
+        Gdx.input.setCatchBackKey(true);
 
         backgroundColor = new Color(Color.TEAL);
         destColor = new Color(Color.MAGENTA);
@@ -101,26 +100,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         batch = new SpriteBatch();
         viewport = new ExtendViewport(Constants.WORLD_WIDTH,Constants.WORLD_HEIGHT);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Teacher_a.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 100;
-        parameter.color= Color.WHITE;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        logoFont = generator.generateFont(parameter);
-        generator.dispose();
-
-        input.setInputProcessor(this);
-        input.setCatchBackKey(true);
-
-        FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
-        parameter.size = 30;
-        otherFont = generator2.generateFont(parameter);
-        parameter.size = 20;
-        buttonFont = generator2.generateFont(parameter);
-        generator2.dispose();
-
-        developersOverlay = new DevelopersOverlay(renderer,batch,logoFont,otherFont);
+        developersOverlay = new DevelopersOverlay(renderer,batch);
 
         preferences = Gdx.app.getPreferences(Constants.PREF_KEY);
         zappers = new Zappers(batch,renderer,preferences,
@@ -133,10 +113,14 @@ public class HomeScreen extends InputAdapter implements Screen {
         initModeLockStates();
 
         buttons = new Button[4];
-        buttons[0] = new Button(renderer,10,10,180,60,"Easy",false,buttonFont,batch);
-        buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",mediumLocked,buttonFont,batch);
-        buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",hardLocked,buttonFont,batch);
-        buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",insaneLocked,buttonFont,batch);
+        buttons[0] = new Button(renderer,10,10,180,60,"Easy",false,
+                        FontsUtilty.MODE_BUTTON_FONT,batch);
+        buttons[1] = new Button(renderer,10 +200,10,180,60,"Medium",mediumLocked,
+                        FontsUtilty.MODE_BUTTON_FONT,batch);
+        buttons[2] = new Button(renderer,10 +400,10,180,60,"Hard",hardLocked,
+                        FontsUtilty.MODE_BUTTON_FONT,batch);
+        buttons[3] = new Button(renderer,10 +600,10,180,60,"Insane",insaneLocked,
+                        FontsUtilty.MODE_BUTTON_FONT,batch);
 
     }
 
@@ -205,10 +189,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         batch.begin();
         FontsUtilty.HOMESCREEN_LOGO_FONT.draw(batch,"Zap Tap",Constants.WORLD_WIDTH/4,5*Constants.WORLD_HEIGHT/7);
         if(playTapped) {
-            otherFont.draw(batch, "MODE", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
+            FontsUtilty.PLAY_BUTTON_FONT.draw(batch, "MODE", Constants.WORLD_WIDTH / 2 - 58, Constants.WORLD_HEIGHT / 3 + 10);
         }
         else {
-            otherFont.draw(batch, "PLAY", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
+            FontsUtilty.PLAY_BUTTON_FONT.draw(batch, "PLAY", Constants.WORLD_WIDTH / 2 - 55, Constants.WORLD_HEIGHT / 3 + 10);
         }
         batch.end();
     }

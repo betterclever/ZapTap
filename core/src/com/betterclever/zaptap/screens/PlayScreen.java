@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.betterclever.zaptap.Constants;
 import com.betterclever.zaptap.Encrypt;
+import com.betterclever.zaptap.FontsUtilty;
 import com.betterclever.zaptap.ZapTapGame;
 import com.betterclever.zaptap.objects.CrossMeRing;
 import com.betterclever.zaptap.objects.ExplosionTriangle;
@@ -45,8 +46,6 @@ public class PlayScreen extends InputAdapter implements Screen {
 
     private float timer;
 
-    int radius;
-
     private DelayedRemovalArray<Ring> rings;
     private DelayedRemovalArray<ExplosionTriangle> explosionTriangles;
 
@@ -61,10 +60,6 @@ public class PlayScreen extends InputAdapter implements Screen {
     private boolean gameOver = false;
 
     private Color bannerColor;
-
-    private BitmapFont font;
-    private BitmapFont restartButtonFont;
-    private BitmapFont goToHomeFont;
 
     private Texture pauseButton;
     private Texture zapperImage;
@@ -91,13 +86,14 @@ public class PlayScreen extends InputAdapter implements Screen {
     @Override
     public void show() {
 
+        Gdx.input.setInputProcessor(this);
+        Gdx.input.setCatchBackKey(true);
+
         shapeRenderer = new ShapeRenderer();
         spriteBatch= new SpriteBatch();
         shapeRenderer.setAutoShapeType(true);
         extendViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
-        Gdx.input.setInputProcessor(this);
-        Gdx.input.setCatchBackKey(true);
         rings = new DelayedRemovalArray<Ring>();
         explosionTriangles = new DelayedRemovalArray<ExplosionTriangle>();
 
@@ -124,24 +120,6 @@ public class PlayScreen extends InputAdapter implements Screen {
         goToHomeBounds = new Rectangle(Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/6-100,300,100);
         continueZapperButtonBounds = new Rectangle();
         restartButtonBounds = new Rectangle(Constants.WORLD_WIDTH-100,0,100,100);
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("VikingHell.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 100;
-        parameter.color= Color.WHITE;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        FreeTypeFontGenerator generator1 = new FreeTypeFontGenerator(Gdx.files.internal("Quantify-Bold.ttf"));
-        parameter.size = 30;
-        parameter.color = Color.BLACK;
-        restartButtonFont = generator1.generateFont(parameter);
-        parameter.color = Color.WHITE;
-        parameter.size = 30;
-        goToHomeFont = generator1.generateFont(parameter);
-        generator1.dispose();
 
         reset(playMode);
     }
@@ -244,35 +222,35 @@ public class PlayScreen extends InputAdapter implements Screen {
     private void handleStoppedCase() {
 
         drawBanner();
-        writeText("Go to Home",Constants.WORLD_WIDTH/2-130,Constants.WORLD_HEIGHT/8,goToHomeFont);
+        writeText("Go to Home",Constants.WORLD_WIDTH/2-130,Constants.WORLD_HEIGHT/8, FontsUtilty.GO_TO_HOME_FONT);
 
         if(gameOver) {
             handleGameOver();
         }
         else if(paused) {
-            writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,font);
+            writeText("   Paused",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 50,FontsUtilty.GAMEOVER_FONT);
             drawButtonWithText("    RESUME",0);
         }
     }
 
     private void handleGameOver() {
-        writeText("Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 100,font);
+        writeText("Game Over",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2 + 100,FontsUtilty.GAMEOVER_FONT);
 
         int zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
         if(chancesLeft <= 0) {
-            writeText("No Chances Left",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2,goToHomeFont);
+            writeText("No Chances Left",Constants.WORLD_WIDTH/4.5f,Constants.WORLD_HEIGHT/2,FontsUtilty.GO_TO_HOME_FONT);
             spriteBatch.begin();
             spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 35, 40, 40);
             spriteBatch.end();
         }
         else if(zapperCount < 150){
-            writeText("Not enough Zappers",Constants.WORLD_WIDTH/4.5f-50,Constants.WORLD_HEIGHT/2,goToHomeFont);
+            writeText("Not enough Zappers",Constants.WORLD_WIDTH/4.5f-50,Constants.WORLD_HEIGHT/2,FontsUtilty.GO_TO_HOME_FONT);
             spriteBatch.begin();
             spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 30, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
             spriteBatch.end();
         }
         else {
-            writeText("Continue using 150 ", Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2, goToHomeFont);
+            writeText("Continue using 150 ", Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2, FontsUtilty.GO_TO_HOME_FONT);
             continueZapperButtonBounds.set(Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2 - 50, 800, 100);
             spriteBatch.begin();
             spriteBatch.draw(zapperImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
@@ -310,7 +288,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         bounds.set(Constants.WORLD_WIDTH/2-155,Constants.WORLD_HEIGHT/3-25+displacementY,295,50);
 
         spriteBatch.begin();
-        restartButtonFont.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-155,
+        FontsUtilty.RESUME_BUTTON_FONT.draw(spriteBatch,text,Constants.WORLD_WIDTH/2-155,
                 Constants.WORLD_HEIGHT/3+15
                 + displacementY);
         spriteBatch.end();
@@ -449,7 +427,7 @@ public class PlayScreen extends InputAdapter implements Screen {
     @Override
     public void resume() {
         paused = false;
-        if(gameOver!=true){
+        if(!gameOver){
             stopped = false;
         }
         for (Ring r:rings){
@@ -499,8 +477,6 @@ public class PlayScreen extends InputAdapter implements Screen {
     @Override
     public void dispose() {
         spriteBatch.dispose();
-        font.dispose();
-        restartButtonFont.dispose();
         shapeRenderer.dispose();
     }
 
