@@ -68,7 +68,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
 					preferences.putBoolean(Constants.MEDIUM_LOCKED,false).flush();
 					break;
 				case Constants.MEDIUM_MODE:
-					preferences.putBoolean(Constants.INSANE_LOCKED,false).flush();
+					preferences.putBoolean(Constants.HARD_LOCKED,false).flush();
 					break;
 				case Constants.HARD_MODE:
 					preferences.putBoolean(Constants.INSANE_LOCKED,false).flush();
