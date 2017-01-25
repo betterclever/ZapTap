@@ -45,7 +45,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.firebase:firebase-ads:10.0.1'
 }
 
 // called every time gradle gets executed, takes the native dependencies of
@@ -150,5 +149,3 @@ idea {
         }
     }
 }
-
-apply plugin: 'com.google.gms.google-services'
