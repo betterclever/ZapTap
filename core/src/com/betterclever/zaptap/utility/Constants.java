@@ -32,4 +32,5 @@ public class Constants {
     public static final Texture GOOGLEPLUS_IMAGE = new Texture("google-plus.png");
     public static final Texture GITHUB_IMAGE = new Texture("github-logo.png");
     public static final Texture CLOSE_IMAGE = new Texture("cancel.png");
+    public static final Texture INFORMATION_IMAGE = new Texture("information.png");
 }

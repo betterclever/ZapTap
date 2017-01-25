@@ -74,13 +74,13 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
     private void initializeInterstitialAd() {
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId(AD_UNIT_ID);
 
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
                 int count = com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT));
-                count+=unclaimedZapperCount*2;
+                count += unclaimedZapperCount * 2;
                 preferences.putString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT, com.betterclever.zaptap.utility.Encrypt.encrypt(count)).flush();
                 requestNewInterstitial();
                 unclaimedZapperCount = 15;
@@ -98,26 +98,24 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
         mInterstitialAd.loadAd(adRequest);
     }
 
-    private void showInterstitialAd(){
+    private void showInterstitialAd() {
         try {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(mInterstitialAd.isLoaded()){
+                    if (mInterstitialAd.isLoaded()) {
                         mInterstitialAd.show();
-                    }
-                    else {
+                    } else {
                         int count = com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT));
-                        count+=(unclaimedZapperCount);
+                        count += (unclaimedZapperCount);
                         preferences.putString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT, com.betterclever.zaptap.utility.Encrypt.encrypt(count)).flush();
                         unclaimedZapperCount = 15;
                         requestNewInterstitial();
                     }
                 }
             });
-        }
-        catch (Exception e){
-            Log.i(TAG,"Error ad me "+e.getMessage());
+        } catch (Exception e) {
+            Log.i(TAG, "Error ad me " + e.getMessage());
         }
 
     }
@@ -139,7 +137,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
                         public void onResult(final Leaderboards.LoadPlayerScoreResult scoreResult) {
                             // if (isScoreResultValid(scoreResult)) {
                             LeaderboardScore c = scoreResult.getScore();
-                            if(c!=null) {
+                            if (c != null) {
                                 int modef = mode;
                                 Gdx.app.log("score + mode", c.getRawScore() + "  " + modef);
                                 if (c.getRawScore() > preferences.getInteger(getStringByMode(modef))) {
@@ -252,71 +250,74 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
 
     private void unlockByCurrentScore(int score, int mode) {
 
-        if(com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT)) >= 2000){
-            Games.Achievements.unlock(gameHelper.getApiClient(),
-                    getString(R.string.achievement_zapper_collector));
-        }
+        if (isSignedIn()) {
 
-        if (mode == com.betterclever.zaptap.utility.Constants.EASY_MODE) {
-            if (score >= 50) {
-                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.MEDIUM_LOCKED,false).flush();
+            if (com.betterclever.zaptap.utility.Encrypt.decrypt(preferences.getString(com.betterclever.zaptap.utility.Constants.ZAPPER_COUNT)) >= 2000) {
                 Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unlock_medium_mode));
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_ninja_level_1));
+                        getString(R.string.achievement_zapper_collector));
             }
-            if (score >= 100) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_blaster_level_1));
-            }
-            if (score >= 200) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unstoppable_zapper_level_1));
-            }
-        } else if (mode == com.betterclever.zaptap.utility.Constants.MEDIUM_MODE) {
-            if (score >= 50) {
-                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.HARD_LOCKED,false).flush();
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unlock_hard_mode));
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_ninja_level_2));
-            }
-            if (score >= 100) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_blaster_level_2));
-            }
-            if (score >= 200) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unstoppable_zapper_level_2));
-            }
-        } else if (mode == com.betterclever.zaptap.utility.Constants.HARD_MODE) {
-            if (score >= 50) {
-                preferences.putBoolean(com.betterclever.zaptap.utility.Constants.INSANE_LOCKED,false).flush();
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unlock_insane_mode));
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_ninja_level_3));
-            }
-            if (score >= 100) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_zap_blaster_level_3));
-            }
-            if (score >= 200) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_unstoppable_zapper_level_3));
-            }
-        } else if (mode == com.betterclever.zaptap.utility.Constants.INSANE_MODE) {
-            if (score >= 50) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_ultimate_zap_ninja));
-            }
-            if (score >= 100) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_ultimate_blaster));
-            }
-            if (score >= 200) {
-                Games.Achievements.unlock(gameHelper.getApiClient(),
-                        getString(R.string.achievement_insane_zapper));
+
+            if (mode == com.betterclever.zaptap.utility.Constants.EASY_MODE) {
+                if (score >= 50) {
+                    preferences.putBoolean(com.betterclever.zaptap.utility.Constants.MEDIUM_LOCKED, false).flush();
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unlock_medium_mode));
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_ninja_level_1));
+                }
+                if (score >= 100) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_blaster_level_1));
+                }
+                if (score >= 200) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unstoppable_zapper_level_1));
+                }
+            } else if (mode == com.betterclever.zaptap.utility.Constants.MEDIUM_MODE) {
+                if (score >= 50) {
+                    preferences.putBoolean(com.betterclever.zaptap.utility.Constants.HARD_LOCKED, false).flush();
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unlock_hard_mode));
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_ninja_level_2));
+                }
+                if (score >= 100) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_blaster_level_2));
+                }
+                if (score >= 200) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unstoppable_zapper_level_2));
+                }
+            } else if (mode == com.betterclever.zaptap.utility.Constants.HARD_MODE) {
+                if (score >= 50) {
+                    preferences.putBoolean(com.betterclever.zaptap.utility.Constants.INSANE_LOCKED, false).flush();
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unlock_insane_mode));
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_ninja_level_3));
+                }
+                if (score >= 100) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_zap_blaster_level_3));
+                }
+                if (score >= 200) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_unstoppable_zapper_level_3));
+                }
+            } else if (mode == com.betterclever.zaptap.utility.Constants.INSANE_MODE) {
+                if (score >= 50) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_ultimate_zap_ninja));
+                }
+                if (score >= 100) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_ultimate_blaster));
+                }
+                if (score >= 200) {
+                    Games.Achievements.unlock(gameHelper.getApiClient(),
+                            getString(R.string.achievement_insane_zapper));
+                }
             }
         }
     }
@@ -334,7 +335,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
                     public void onResult(final Leaderboards.LoadPlayerScoreResult scoreResult) {
                         // if (isScoreResultValid(scoreResult)) {
                         LeaderboardScore c = scoreResult.getScore();
-                        if(c!=null) {
+                        if (c != null) {
                             Gdx.app.log("score + mode", c.getRawScore() + "  " + mode);
                             if (c.getRawScore() > preferences.getInteger(getStringByMode(mode))) {
                                 preferences.putInteger(getStringByMode(mode), (int) c.getRawScore()).flush();
@@ -360,7 +361,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformHelpe
 
     private void storeUserId() {
         String playerID = Games.Players.getCurrentPlayer(gameHelper.getApiClient()).getPlayerId();
-        if(! preferences.getString("playerid").equals(playerID)) {
+        if (!preferences.getString("playerid").equals(playerID)) {
             preferences.putString("playerid", playerID).flush();
             resetScores();
         }

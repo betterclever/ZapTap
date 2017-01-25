@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -61,6 +62,11 @@ public class HomeScreen extends InputAdapter implements Screen {
     private EarnZapperButton earnZapperButton;
     private SoundOnOffButton soundOnOffButton;
 
+    private Rectangle infoButtonBounds;
+    private Rectangle infoCloseBounds;
+
+    private boolean developerScreenShown = false;
+
     private Preferences preferences;
 
     public HomeScreen(ZapTapGame zapTapGame) {
@@ -76,6 +82,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(this);
         Gdx.input.setCatchBackKey(true);
 
+        infoButtonBounds = new Rectangle(0,0,100,100);
+        infoCloseBounds = new Rectangle(Constants.WORLD_WIDTH-100,Constants.WORLD_HEIGHT-100,100,100);
         backgroundColor = new Color(Color.TEAL);
         destColor = new Color(Color.MAGENTA);
         colorAction = new ColorAction();
@@ -179,9 +187,15 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
 
         zappers.render(delta);
-        //developersOverlay.render(delta);
-        //earnZapperButton.render(delta);
-        tutorialOverlay.render(delta);
+
+        if(developerScreenShown) {
+            developersOverlay.render(delta);
+        }
+        if(!playTapped && !developerScreenShown) {
+            batch.begin();
+            batch.draw(Constants.INFORMATION_IMAGE, 20, 10, 50, 50);
+            batch.end();
+        }
 
     }
 
@@ -242,6 +256,29 @@ public class HomeScreen extends InputAdapter implements Screen {
         boolean value = super.touchDown(screenX, screenY, pointer, button);
 
         Vector2 position = viewport.unproject(new Vector2(screenX,screenY));
+
+        if(!playTapped){
+            if(infoButtonBounds.contains(position)){
+                developerScreenShown = true;
+                return value;
+            }
+            if(developersOverlay.githubBounds.contains(position)){
+                Gdx.net.openURI("https://github.com/betterclever");
+            }
+            if(developersOverlay.facebookBounds.contains(position)){
+                Gdx.net.openURI("https://facebook.com/betterclever");
+            }
+            if(developersOverlay.googleplusBounds.contains(position)){
+                Gdx.net.openURI("https://plus.google.com/u/0/104046348939694351090");
+            }
+        }
+
+        if(developerScreenShown){
+            if(infoCloseBounds.contains(position)){
+                developerScreenShown = false;
+            }
+            return value;
+        }
 
         if(playRippleButton.isTouched(position)){
             playTapped = !playTapped;

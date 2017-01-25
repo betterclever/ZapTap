@@ -44,6 +44,12 @@
    float   reportRayFixture(long, float, float, float, float, float);
 }
 
+-assumenosideeffects class com.badlogic.gdx.Application {
+    public void debug(...);
+    public void error(...);
+    public void log(...);
+}
+
 -keep class com.google.ads.mediation.admob.AdMobAdapter {
     *;
 }
@@ -52,4 +58,3 @@
     *;
 }
 
--keep class com.chartboost.** { *; }

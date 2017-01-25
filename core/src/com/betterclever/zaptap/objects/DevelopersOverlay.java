@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.betterclever.zaptap.utility.Constants;
 import com.betterclever.zaptap.utility.FontsUtilty;
 
@@ -21,6 +22,7 @@ public class DevelopersOverlay implements RenderableObject {
     private float fontX, fontY;
     private static final String DEVELOPERS = "Developed By";
     private static final String DEV_NAME = "Pranjal Paliwal";
+    public Rectangle githubBounds, facebookBounds,googleplusBounds;
 
     public DevelopersOverlay(ShapeRenderer renderer, SpriteBatch batch){
         spriteBatch = batch;
@@ -29,6 +31,10 @@ public class DevelopersOverlay implements RenderableObject {
         GlyphLayout layout = new GlyphLayout(FontsUtilty.DEVELOPERS_SCREEN_FONT,DEVELOPERS);
         fontX = 0 + (Constants.WORLD_WIDTH - layout.width)/2;
         fontY = Constants.WORLD_HEIGHT/4f + (Constants.WORLD_HEIGHT + layout.height)/2;
+
+        facebookBounds = new Rectangle(Constants.WORLD_WIDTH/2 + 90,Constants.WORLD_HEIGHT/2 - 65,50,50);
+        githubBounds = new Rectangle(Constants.WORLD_WIDTH/2 + 150,Constants.WORLD_HEIGHT/2 - 65,50,50);
+        googleplusBounds = new Rectangle(Constants.WORLD_WIDTH/2 + 210,Constants.WORLD_HEIGHT/2 - 65,50,50);
 
     }
 

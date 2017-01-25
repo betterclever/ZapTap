@@ -21,6 +21,25 @@ android {
         applicationId "com.betterclever.zaptap"
         minSdkVersion 16
         targetSdkVersion 25
+        versionCode 2
+        versionName "1.0.1"
+    }
+
+    signingConfigs {
+        releaseSigning {
+            storeFile file('../ZapTap_Release')
+            storePassword 'cleverzaptap'
+            keyAlias 'zaptap'
+            keyPassword 'cleverzaptap'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            signingConfig signingConfigs.releaseSigning
+        }
     }
 }
 

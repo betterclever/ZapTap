@@ -3,6 +3,7 @@ package com.betterclever.zaptap.objects;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.betterclever.zaptap.utility.Constants;
 
 /**
@@ -15,14 +16,27 @@ public class CrossMeRing extends Ring {
     int arcNum;
     float rot = 0;
     int speed;
+    Color white;
+    Color red;
     Color ringColor;
+    float time;
+    ColorAction colorAction;
 
     public CrossMeRing(ShapeRenderer renderer, int mode){
 
         this.renderer = renderer;
         radius = 200;
-        ringColor = Color.WHITE;
+        white = Color.WHITE.cpy();
         setParamsByMode(mode);
+
+        red = new Color(0.7f,0.3f,0.3f,1);
+
+        ringColor = white;
+        colorAction = new ColorAction();
+        colorAction.setColor(ringColor);
+        colorAction.setDuration(2f);
+        colorAction.setEndColor(red);
+
     }
 
     private void setParamsByMode(int mode) {
@@ -54,9 +68,14 @@ public class CrossMeRing extends Ring {
             radius -= 60*delta;
             rot += (speed * delta);
             rot %= 360;
+
+            time += delta;
+            colorAction.act(delta);
+
         }
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
+
 
         renderer.setColor(ringColor);
         for (int i = 0; i < arcNum ; i++) {

@@ -25,7 +25,7 @@ public class ZapTapGame extends Game {
 	public void create() {
 		music = com.betterclever.zaptap.utility.Constants.MUSIC;
 		music.setLooping(true);
-		music.setVolume(1f);
+		music.setVolume(0.8f);
 		homeScreen = new HomeScreen(this);
 		setScreen(homeScreen);
 		//setScreen(playScreen);

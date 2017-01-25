@@ -32,6 +32,10 @@ public class NormalRing extends Ring {
         renderer.setColor(color);
         renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius,256);
         renderer.setColor(Color.BLACK);
+        renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius-3,256);
+        renderer.setColor(color);
+        renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius-4,256);
+        renderer.setColor(Color.BLACK);
         renderer.circle(Constants.WORLD_WIDTH/2,Constants.WORLD_HEIGHT/2,radius-7,256);
 
         renderer.end();

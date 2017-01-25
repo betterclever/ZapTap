@@ -76,8 +76,10 @@ public class PlayBall implements RenderableObject {
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        renderer.setColor(color);
+        renderer.setColor(Color.BLACK);
         renderer.circle( position.x, position.y, radius, 256);
+        renderer.setColor(color);
+        renderer.circle( position.x, position.y, radius-3, 256);
 
         bound.set(position.x, position.y, radius);
 

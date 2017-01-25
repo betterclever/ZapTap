@@ -129,7 +129,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             timer += delta;
         }
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         extendViewport.apply();
@@ -240,14 +240,14 @@ public class PlayScreen extends InputAdapter implements Screen {
             spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 35, 40, 40);
             spriteBatch.end();
         }
-        else if(zapperCount < 150){
+        else if(zapperCount < 100){
             writeText("Not enough Zappers",Constants.WORLD_WIDTH/4.5f-50,Constants.WORLD_HEIGHT/2,FontsUtilty.GO_TO_HOME_FONT);
             spriteBatch.begin();
             spriteBatch.draw(sadImage, 3 * Constants.WORLD_WIDTH / 4 - 30, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
             spriteBatch.end();
         }
         else {
-            writeText("Continue using 150 ", Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2, FontsUtilty.GO_TO_HOME_FONT);
+            writeText("Continue using 100 ", Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2, FontsUtilty.GO_TO_HOME_FONT);
             continueZapperButtonBounds.set(Constants.WORLD_WIDTH / 4.5f - 30, Constants.WORLD_HEIGHT / 2 - 50, 800, 100);
             spriteBatch.begin();
             spriteBatch.draw(zapperImage, 3 * Constants.WORLD_WIDTH / 4 - 40, Constants.WORLD_HEIGHT / 2 - 40, 40, 40);
@@ -492,7 +492,7 @@ public class PlayScreen extends InputAdapter implements Screen {
 
         if(gameOver){
             int zapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
-            if(zapperCount >= 150 && chancesLeft > 0) {
+            if(zapperCount >= 100 && chancesLeft > 0) {
                 if (continueZapperButtonBounds.contains(touchPos)) {
                     continueGameWithSameScore();
                 }
@@ -547,7 +547,7 @@ public class PlayScreen extends InputAdapter implements Screen {
         chancesLeft --;
 
         int currentZapperCount = Encrypt.decrypt(preferences.getString(Constants.ZAPPER_COUNT));
-        currentZapperCount -= 150;
+        currentZapperCount -= 100;
         preferences.putString(Constants.ZAPPER_COUNT,Encrypt.encrypt(currentZapperCount)).flush();
 
     }

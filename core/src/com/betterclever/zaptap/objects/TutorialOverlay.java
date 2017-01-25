@@ -39,7 +39,10 @@ public class TutorialOverlay implements RenderableObject {
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         spriteBatch.begin();
-        FontsUtilty.SCORE_FONT.draw(spriteBatch,"Tutorial",Constants.WORLD_WIDTH/2-200,Constants.WORLD_HEIGHT/2+200);
+        FontsUtilty.DEVELOPERS_SCREEN_FONT.draw(spriteBatch,"How To Play?",Constants.WORLD_WIDTH/2-150,Constants.WORLD_HEIGHT/2+130);
+        
         spriteBatch.end();
+
+
     }
 }
