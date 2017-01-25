@@ -129,7 +129,7 @@ public class PlayScreen extends InputAdapter implements Screen {
             timer += delta;
         }
 
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         extendViewport.apply();
