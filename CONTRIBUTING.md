@@ -23,8 +23,8 @@
 
 ## Creating an Issue
 
-1. You may create issues for bugs, new features, improvements to current featured.
-2. Include LogCat, Relevant Screenshots for Bugs, ANRs and Force Stops. 
+1. You may create issues for bugs, new features, improvements to current features.
+2. Include Logcat , Error Stacktrace , Relevant Screenshots for Bugs, ANRs and Force Stops. 
 3. Avoid Creating minor issues.
 
 ## Solving an Issue.
