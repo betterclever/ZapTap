@@ -4,6 +4,7 @@
 
 ###Requirements
 * Android Studio 2.2+ ( Recommended 2.2.3 or 2.3.0 beta 2 ( Canary Channel ) ) 
+* Android SDK Version 25 with latest build tools. 
 
 ### Steps
 
