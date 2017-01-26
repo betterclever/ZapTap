@@ -11,6 +11,7 @@ dependencies:
 #Replace 
 test:
     override:
+        - chmod +x gradlew
         - (./gradlew assemble -PdisablePreDex):
             timeout: 360
         - emulator -avd circleci-android22 -no-audio -no-window:
